@@ -29,4 +29,4 @@ async function userCreate (req,res) {
 // }
 
 
-module.exports = {userCreate};
+module.exports = {userCreate}; //exporta a modules/index_users
