@@ -16,5 +16,9 @@ INSERT INTO order_status (order_status_description) VALUES
 ('En Camino'),
 ('Entregado');
 
+INSERT INTO users (email,fullname,phone,adress,user_password,user_admin) VALUES
+('usuario_admin@gmail.com','usuario administrador','1234-1234','Direccion Delilah Resto','adminPass',1),
+('usuario1@hotmail.com','usuario uno','4321-4321','Direccion Usuario 1','usuario1Pass',0);
+
 
 
