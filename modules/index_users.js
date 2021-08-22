@@ -1,18 +1,14 @@
 
 const express = require('express');
 const router = express.Router();
-const {userCreate,userLogin} = require('../source/controllers/user/user_create.js');
-const {userDataValidate,userEmailValidate,userDataLoginValidate} = require('../midllewares/local_middlewares/users_middlewares');
-// const eliminarUsuario = require('/controllers/usuario/eliminarUsuario');
-// const crearUsuario = require('/controllers/usuario/crearUsuario');
-// const confirmarUsuario = require('/controllers/usuario/confirmarUsuario');
-// const loginUsuario = require('/controllers/usuario/loginUsuario');
-// const verificarUsuarioNuevo = require('/middlewares/usuario/verificarUsuarioNuevo');
-// const validarUsuario = require('/middlewares/usuario/validarUsuario');
+const {userCreate} = require('../source/controllers/user/user_create.js');
+const {userLogin} = require('../source/controllers/user/userLogin');
+const {userDataValidate,userEmailValidate} = require('../midllewares/local_middlewares/users_middlewares');
+const{userDataLoginValidate} = require ('../midllewares/local_middlewares/users_middlewares')
 
 //subrutas de usuarios
 
-router.post('/userCreate',userDataValidate,userEmailValidate,userCreate);
+router.post('/userCreate',userDataValidate,userEmailValidate,userCreate); //USEREMAIL VALIDATE NO VA EN USER LOGIN????
 router.get('/userLogin',userDataLoginValidate,userLogin);
 
 //cuado llega a loginUsuario, devuelvo respuesta, el usuario se entera el token(loginusuario.js)

@@ -1,28 +1,29 @@
-const {login} = require('ruta a model/user donde va a estar el select de pass del user de la base de datos')
-const response = require('clase con la respuesta Class')
-const jwt = require('utilidad jsonwebtoken')
-const jwtkey = "clave"
+const {selectDataLogin} = require('../../../model/users');
+const Response = require('../../../classes/response');
+const jwt = require('jsonwebtoken');
+require('dotenv').config();
+const JWTKEY = process.env.JWTKEY; 
+let rta;
 
-/**
- * 1. plantear acá funcion loginUser (asincrona)
- *  1.1. requerir user/password del body
- *  1.2 invocar funccion planteada en "model" y pasar como parametro user-password
- *  1.3 que no venga vacío el campo
- *  1.4 que exista el usuario (username == users[0].username / password == users[0].password)
- *  1.5 si existe usuario, const token = jwt.sign +  jwtkey expiresIn/algorithm: 'RS256'
- *  1.6 respuesta logueo correcto
- *  1.7 exportar funcion loginUser
- * 
- * 2. requerir en modules loginUser
- *  2.1. router.post ("/login"middleware de limiter,loginUser)
- * 
- * 3. const login(user) en model (select)
- * 
- * 4. middleware ratelimit + funcion validar usuario (usuario no vacio)
- * 
- * 
- * 
- * 
- */
+async function userLogin(req, res) {
+    try {
+        const {email,user_password} = req.body;
+        const response = await selectDataLogin([email, user_password]);
+        if (response.length == 0) {
+            rta = new Response(false, 403, "Email o Password incorrectos", "");
+            res.status(403).send(rta)
+        } else {
+            const token = jwt.sign({email: email,user_password: user_password},
+            JWTKEY, {expiresIn: '1h'}, {algorithm: 'RS256'});
+            rta = new Response(false, 200, "Usuario logueado exitosamente", token);
+            res.status(200).send(rta)
+        }
+    } catch (error) {
+        rta = new Response(true, 500, "No fue posible loguearse", error);
+        res.status(500).send(rta)
+    };
+};
+
+module.exports = {userLogin}; //exporta a modules/index_users
 
 
