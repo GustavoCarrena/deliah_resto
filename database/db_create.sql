@@ -39,18 +39,19 @@ CREATE TABLE order_status (
   PRIMARY KEY (order_status_code)
 )ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
-    CREATE TABLE orders (
-      user_id INT(7) UNSIGNED,
-      order_id INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-      payment_code TINYINT(2) UNSIGNED,
-      order_time TIMESTAMP,
-      order_status_code TINYINT(1) UNSIGNED,
-      order_adress VARCHAR (255) NOT NULL,
-      FOREIGN KEY (user_id) REFERENCES users(user_id),
-      FOREIGN KEY (order_status_code) REFERENCES order_status (order_status_code),
-      FOREIGN KEY (payment_code) REFERENCES payment_methods(payment_code),
-      PRIMARY KEY (order_id)
-    )ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  CREATE TABLE orders (
+    user_id INT(7) UNSIGNED,
+    order_id INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+    payment_code TINYINT(2) UNSIGNED,
+    order_time TIMESTAMP,
+    order_status_code TINYINT(1) UNSIGNED,
+    order_adress VARCHAR (255) NOT NULL,
+    total INT(10) UNSIGNED,
+    FOREIGN KEY (user_id) REFERENCES users(user_id),
+    FOREIGN KEY (order_status_code) REFERENCES order_status (order_status_code),
+    FOREIGN KEY (payment_code) REFERENCES payment_methods(payment_code),
+    PRIMARY KEY (order_id)
+  )ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 CREATE TABLE order_products (
   order_id INT(10) UNSIGNED,

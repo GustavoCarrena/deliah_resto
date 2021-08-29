@@ -11,7 +11,6 @@ async function getAllProducts(req, res) {
             rta = new Response(false, 200, "Consulta generada exitosamente", products);
             res.status(200).send(rta)
         } else {
-            // console.log(products);
             rta = new Response(true, 401, "No hay productos disponibles para mostrar", "");
             res.status(200).send(rta)
         }

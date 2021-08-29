@@ -8,7 +8,7 @@ const{userDataLoginValidate} = require ('../midllewares/local_middlewares/users_
 
 //subrutas de usuarios
 
-router.post('/userCreate',userDataValidate,userEmailValidate,userCreate); //USEREMAIL VALIDATE NO VA EN USER LOGIN????
+router.post('/userCreate',userDataValidate,userEmailValidate,userCreate); 
 router.get('/userLogin',userDataLoginValidate,userLogin);
 
 //cuado llega a loginUsuario, devuelvo respuesta, el usuario se entera el token(loginusuario.js)

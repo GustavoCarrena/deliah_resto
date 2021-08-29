@@ -5,8 +5,6 @@ let arrayProduct = [];
 
 const updateProducts = (req, res) => {
 
-    // let {email} = req.body;
-
     let {email,product_id,data} = req.body;
 
     for (let key in data) {

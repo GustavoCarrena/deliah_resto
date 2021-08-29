@@ -22,8 +22,16 @@ const selectDataLogin = (dataLogin) => {
     });
 };
 
+const selectUserId = (UserId) => {
+    return sequelize.query('SELECT user_id FROM users WHERE user_id = ?', {
+        type: sequelize.QueryTypes.SELECT,
+        replacements: [UserId]
+    });
+};
+
 module.exports = {
     insertNewUser,
     selectUserEmail,
     selectDataLogin,
+    selectUserId
 }; //a controllers/user_create

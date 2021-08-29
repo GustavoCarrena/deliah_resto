@@ -34,6 +34,13 @@ const selectProductById = (idP) => {
     });
 };
 
+const selectProductIfExist = (id) => {
+    return sequelize.query('SELECT * FROM products WHERE product_id = ? AND product_disponibilty = 1;', {
+            type: sequelize.QueryTypes.SELECT,
+            replacements: [id]
+    });
+};
+
 // /*====== Eliminación ======*/
 
 const OneDeleteProduct = ( id ) => {
@@ -59,5 +66,6 @@ module.exports = {
     selectAllProducts,
     selectProductById,
     OneDeleteProduct,
-    updateProductById
+    updateProductById,
+    selectProductIfExist
 };
