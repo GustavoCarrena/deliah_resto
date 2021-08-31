@@ -1,5 +1,6 @@
 const {selectProductIfExist} = require('../../model/products');
 const {selectUserId} = require('../../model/users');
+const {getOrderById} = require('../../model/orders');
 const Response = require('../../classes/response');
 let rta;
 
@@ -62,6 +63,8 @@ const validateOrderData = (req, res, next) => {
 }
 
 
+/* ========= VALIDA QUE EL USUARIO EXISTA PARA CREAR UNA ORDEN =============*/
+
 const userIdValidate = (req, res, next) => {
 
     const {order_header} = req.body;
@@ -81,7 +84,44 @@ const userIdValidate = (req, res, next) => {
         });
 };
 
-module.exports = {validateOrderProductData,validateOrderData,userIdValidate};
+/* ========= Validacion confirmar orden: 1) los datos ingresados existan y tengan formato requerido, 2) La orden y el usuario existan =============*/
+
+const confirmOrderDataValidate = async (req, res, next) => {
+    
+    let rta;
+    const {order_id,user_id,payment_code} = req.body;
+
+    try {
+        
+        if (order_id == null || user_id == null || payment_code == null) {
+            rta = new Response(true, 400, "No se admiten campos vacíos", "");
+            res.status(400).send(rta)
+        } else if (typeof (order_id) != 'number' || typeof (user_id) != 'number' || typeof (payment_code) != 'number') {
+            rta = new Response(true, 400, "Todos los campos deben ser numéricos", "");
+            res.status(400).send(rta)
+        } else if (payment_code === 1 ){
+            rta = new Response(true, 400, "El tipo de pago debe ser Efectivo o Tarjeta", `payment_code no admitido = ${payment_code}`);
+            res.status(400).send(rta)
+        } else {
+            const getOrder = await getOrderById(order_id,user_id);
+            if (getOrder.length === 0){
+                rta = new Response(true, 400, "La orden no existe o el usuario con el que se intenta confirmar no se corresponde con la orden", "");
+                res.status(400).send(rta)
+            } else {
+                next();
+            }
+        };
+    } catch (error) {
+        console.log(error);
+        rta = new Response(true, 500, "No fue posible confirmar la orden", "");
+        res.status(500).send(rta)
+    }
+}
+
+
+
+
+module.exports = {validateOrderProductData,validateOrderData,userIdValidate,confirmOrderDataValidate};
 
 
 

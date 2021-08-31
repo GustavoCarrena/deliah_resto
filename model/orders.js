@@ -47,13 +47,34 @@ const updateOrderPrice = (orderId) => {
 
 
 const updateOrder = (order) => {
-    return sequelize.query("UPDATE orders SET payment_code = ?, order_status_code = ? WHERE order_id = ?", {
+    return sequelize.query("UPDATE orders SET order_status_code = ?, payment_code = ? WHERE order_id = ?", {
         type: sequelize.QueryTypes.UPDATE,
         replacements: order,
     });
 }
 
-module.exports = {insertNewOrder,insertInOrderTable,orderSummary,orderSummaryTotal,updateOrder,updateOrderPrice};
+const getOrderById = (userid,orderid) =>{
+    return sequelize.query("SELECT user_id, order_id FROM orders WHERE order_id = ? AND user_id = ?",{ 
+        type: sequelize.QueryTypes.SELECT, 
+        replacements:[userid,orderid],
+    })
+}
+
+const updateOrderSatus = (order) => {
+    return sequelize.query("UPDATE orders SET order_status_code = ? WHERE order_id = ?", {
+        type: sequelize.QueryTypes.UPDATE,
+        replacements: order,
+    });
+}
+
+const orderStatusDescription = ( id ) => {
+    return sequelize.query('SELECT * FROM order_status WHERE order_status_code = ?', {
+            type: sequelize.QueryTypes.SELECT,
+            replacements: id
+    })
+}
+
+module.exports = {insertNewOrder,insertInOrderTable,orderSummary,orderSummaryTotal,updateOrder,updateOrderPrice,getOrderById,updateOrderSatus,orderStatusDescription};
 
 
 
