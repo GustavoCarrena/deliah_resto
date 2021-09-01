@@ -11,10 +11,5 @@ const{userDataLoginValidate} = require ('../midllewares/local_middlewares/users_
 router.post('/userCreate',userDataValidate,userEmailValidate,userCreate); 
 router.get('/userLogin',userDataLoginValidate,userLogin);
 
-//cuado llega a loginUsuario, devuelvo respuesta, el usuario se entera el token(loginusuario.js)
-// usuario.post('/registro',verificarUsuarioNuevo,crearUsuario);
-// usuario.get('confirm',confirmarUsuario);
-// usuario.put('delete',eliminarUsuario); //borrado lógico
-
 module.exports = router; //app.js
 

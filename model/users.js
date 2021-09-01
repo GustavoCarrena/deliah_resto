@@ -29,9 +29,25 @@ const selectUserId = (UserId) => {
     });
 };
 
+const selectUserIdByEmail = (UserId) => {
+    return sequelize.query('SELECT user_id FROM users WHERE email = ?', {
+        type: sequelize.QueryTypes.SELECT,
+        replacements: [UserId]
+    });
+};
+
+const selectUserAdmin = (UserId) => {
+    return sequelize.query('SELECT user_admin FROM users WHERE user_id = ?', {
+        type: sequelize.QueryTypes.SELECT,
+        replacements: [UserId]
+    });
+};
+
 module.exports = {
     insertNewUser,
     selectUserEmail,
     selectDataLogin,
-    selectUserId
+    selectUserId,
+    selectUserIdByEmail,
+    selectUserAdmin
 }; //a controllers/user_create

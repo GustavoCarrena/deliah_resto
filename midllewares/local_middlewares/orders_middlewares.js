@@ -1,6 +1,6 @@
 const {selectProductIfExist} = require('../../model/products');
-const {selectUserId} = require('../../model/users');
-const {getOrderById} = require('../../model/orders');
+const {selectUserId,selectUserAdmin} = require('../../model/users');
+const {getOrderById,getOrderFullData} = require('../../model/orders');
 const Response = require('../../classes/response');
 let rta;
 
@@ -112,16 +112,65 @@ const confirmOrderDataValidate = async (req, res, next) => {
             }
         };
     } catch (error) {
-        console.log(error);
+        // console.log(error);
         rta = new Response(true, 500, "No fue posible confirmar la orden", "");
         res.status(500).send(rta)
     }
 }
 
+const orderStatusDataValidate = async (req, res, next) => {
+
+//1 validar que el usuario sea administrador (ver porque ya está)
+//2 validar que exista la orden / que el status Id exista
+//3 que la orden no puede estar ni cancelada ni finalizada previamente para poder cambiar el estado
+// 4 que si el order status es pendiente o cancelado, el payment code debe ser 1 (pendiente), si es otro order status , el debe ser distinto a 1 (ultimo middleware)
+
+    let rta;
+    const {user_id,order_status_code,order_id} = req.body;       
+    // const statusError = false;
+
+    try {
+        const userAdmin = await selectUserAdmin(user_id)
+        console.log(`userAdmin ${userAdmin[0].user_admin}`);
+        if (userAdmin[0].user_admin == 1) {
+            try {
+                const orderUser = await getOrderById(user_id, order_id)
+                if (orderUser.order_id.length > 0) {
+                    try {
+                        const orderStatus = await getOrderFullData(order_id);
+                        const orderStatusCode = orderStatus.order_status_code;
+                        if (orderStatusCode !== 2 ||  orderStatusCode !== 6) { //esta no va
+                            next();
+                        }
+                    } catch (error) {
+                        rta = new Response(true, 400, "La orden que desea actializar, no existe", "");
+                        res.status(400).send(rta)
+                    }
+                } 
+            } catch (error) {
+                rta = new Response(true, 400, "El usuario debe tener privilegios de administrador para actualizar el estado de la orden", "");
+                res.status(400).send(rta)
+            }
+        } else {console.log('no es administrador');}
+    } catch (error) {
+        rta = new Response(true, 500, "No fue posible actualizar el estado de la orden", "");
+        res.status(500).send(rta)
+    }
+}
+
+//que sea el usuario de la orden
+// que sea un codigo valido para cancelar (distinto a cancelado y distinto a entregado)
+//que viaje userId y OrderID y que los datos requeridos sean validos
 
 
 
-module.exports = {validateOrderProductData,validateOrderData,userIdValidate,confirmOrderDataValidate};
+module.exports = {
+    validateOrderProductData,
+    validateOrderData,
+    userIdValidate,
+    confirmOrderDataValidate,
+    orderStatusDataValidate
+};
 
 
 

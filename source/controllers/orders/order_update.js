@@ -25,6 +25,9 @@ async function orderUpdate(req,res) {
 
 async function orderStatusUpdate(req,res) {
     
+    
+
+
     let rta;
     const {order_status_code,order_id} = req.body;
 
@@ -46,5 +49,7 @@ async function orderStatusUpdate(req,res) {
         res.status(500).send(rta)
     }
 }
+
+
 
 module.exports = {orderUpdate,orderStatusUpdate};

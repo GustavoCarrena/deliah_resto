@@ -1,4 +1,4 @@
-const {selectDataLogin} = require('../../../model/users');
+const {selectDataLogin,selectUserIdByEmail} = require('../../../model/users');
 const Response = require('../../../classes/response');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
@@ -16,7 +16,8 @@ async function userLogin(req, res) {
         } else {
             const token = jwt.sign({email: email,user_password: user_password},
             JWTKEY, {expiresIn: '1h'}, {algorithm: 'RS256'});
-            rta = new Response(false, 200, "Usuario logueado exitosamente", token);
+            const selectId =  await selectUserIdByEmail (email)
+            rta = new Response(false, 200, "Usuario logueado exitosamente", {"ID Usuario": selectId[0].user_id, "Token":  token});
             res.status(200).send(rta)
         }
     } catch (error) {

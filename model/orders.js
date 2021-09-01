@@ -74,7 +74,26 @@ const orderStatusDescription = ( id ) => {
     })
 }
 
-module.exports = {insertNewOrder,insertInOrderTable,orderSummary,orderSummaryTotal,updateOrder,updateOrderPrice,getOrderById,updateOrderSatus,orderStatusDescription};
+const getOrderFullData = ( id ) => {
+    return sequelize.query('SELECT * FROM orders WHERE order_id = ?', {
+            type: sequelize.QueryTypes.SELECT,
+            replacements: id
+    })
+}
+
+
+module.exports = {
+    insertNewOrder,
+    insertInOrderTable,
+    orderSummary,
+    orderSummaryTotal,
+    updateOrder,
+    updateOrderPrice,
+    getOrderById,
+    updateOrderSatus,
+    orderStatusDescription,
+    getOrderFullData
+};
 
 
 

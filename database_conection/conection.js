@@ -9,7 +9,7 @@ const sequelize = new Sequelize(path,{operatorsAliases: 0 });
 sequelize.authenticate()
 .then(()=>{
 console.log(`========================
-=> BD Status: Connect <= 
+=> DB Status: Connect <= 
 ========================`);})
 .catch(err=>{console.log('Error de conexion:',err);});
 
