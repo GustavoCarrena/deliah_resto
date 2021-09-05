@@ -1,8 +1,33 @@
 const {selectProductIfExist} = require('../../model/products');
 const {selectUserId,selectUserAdmin} = require('../../model/users');
-const {getOrderById,getOrderFullData} = require('../../model/orders');
+const {getOrderById,orderStatusDescription,getOrderFullData} = require('../../model/orders');
 const Response = require('../../classes/response');
 let rta;
+
+/*Valida que cuando se crea una orden, exista el producto*/
+// const validateOrderProductData = async (req, res, next) => {
+
+//     let {orderProducts} = req.body;
+
+//     orderProducts.reduce((products, order_product) => {
+//         let selectProduct = selectProductIfExist(order_product.product_id)
+//             .then(() => {
+//                 if (selectProduct.length === 0) {
+//                     products.push(`product_id: ${order_product.product_id}`)
+//                     console.log(`LOG idPush = ${products}`);
+                   
+//                 };
+//             }).catch((error) => {
+//                 res.status(500).send(new Response(true, 500, "No se pudo procesar la orden", error));
+//             })
+//     }, [])
+
+//     if (orderProducts.length) {
+//         res.status(404).send(new Response(true, 404, "Los siguientes Id de poductos solicitados son inexistentes o no están disponibles", ""));
+//     } else {
+//         next();
+//     };
+// }
 
 const validateOrderProductData = async (req, res, next) => {
     
@@ -23,8 +48,7 @@ const validateOrderProductData = async (req, res, next) => {
         };
     }
     if( prodErr == true) {
-        rta = new Response(true, 404, "Los siguientes Id de poductos solicitados son inexistentes o no están disponibles", orderProductsArray);
-        res.status(404).send(rta);
+        res.status(404).send(new Response(true, 404, "Los siguientes Id de poductos solicitados son inexistentes o no están disponibles", orderProductsArray));
     } else {
         next();
     };
@@ -112,64 +136,150 @@ const confirmOrderDataValidate = async (req, res, next) => {
             }
         };
     } catch (error) {
-        // console.log(error);
-        rta = new Response(true, 500, "No fue posible confirmar la orden", "");
-        res.status(500).send(rta)
+        res.status(500).send(new Response(true, 500, "No fue posible confirmar la orden", error))
     }
 }
 
-const orderStatusDataValidate = async (req, res, next) => {
+/*Validacion cambiar estado de orden: que el usuario sea administrador*/
 
-//1 validar que el usuario sea administrador (ver porque ya está)
-//2 validar que exista la orden / que el status Id exista
-//3 que la orden no puede estar ni cancelada ni finalizada previamente para poder cambiar el estado
-// 4 que si el order status es pendiente o cancelado, el payment code debe ser 1 (pendiente), si es otro order status , el debe ser distinto a 1 (ultimo middleware)
+const userAdmin = async (req,res,next) => {
+    try {
+        const {user_id} = req.body;
+        const response = await selectUserAdmin(user_id)
+        
+        if (response[0].user_admin === 1 ) {
+            next()
+        }else{
+            res.status(409).send( new Response(true, 409, ` El usuario con el Id ${JSON.stringify(user_id)} debe ser administrador para efectuar la operación y el campo no puede estar vacío`, ""));
+        }        
+    } catch (error) {
+        res.status(500).send(new Response(true, 500, 'No se pudo realizar la operación', error));
+    };
+};
 
-    let rta;
-    const {user_id,order_status_code,order_id} = req.body;       
-    // const statusError = false;
+/*Validacion cambiar estado de orden: que el formato de datos de la orden y del estado sean validos*/
+
+
+const orderStatusData = (req,res,next) => {
+    try {
+        const {order_status_code, order_id} = req.body;
+        
+        if (!order_status_code || !order_id || typeof(order_status_code) !== 'number' || typeof(order_id) !== 'number') {
+            res.status(400).send( new Response(true, 400, "Los datos no pueden estar vacíos y deben ser numéricos", ""));
+        } else  {
+            next();
+        }
+    } catch (error) {
+        res.status(500).send(new Response(true, 500, 'No se pudo modificar el estado de la orden', error));
+    };
+};
+
+/*Validacion cambiar estado de orden: que el estado ingresado y que la orden existan*/
+
+const orderIn = async (req,res,next) => {
+    try {
+        
+        const {order_status_code,order_id} = req.body;
+        const order_status_codeE = await orderStatusDescription(order_status_code);
+        const order_idE = await getOrderFullData(order_id);
+        
+        if (order_status_codeE.length === 0) {
+            res.status(400).send( new Response(true, 400, "El estado que desea asignar no existe", ""));
+        } else if (order_idE.length === 0  ){
+            res.status(400).send( new Response(true, 400, "La orden que quiere modificar no existe", ""));
+        } else if (order_status_codeE[0].order_status_code === 2 || order_status_codeE[0].order_status_code === 6) {
+            
+            res.status(400).send( new Response(true, 400, "No se puede actualizar el estado de la orden", `La orden tiene anteriormente un estado ${order_status_codeE[0].order_status_code} =  ${order_status_codeE[0].order_status_description}`));
+        }
+        else{
+            next();
+        }
+    } catch (error) {
+        res.status(500).send(new Response(true, 500, 'No se pudo modificar el estado de la orden', error));
+
+    };
+};
+
+/*Validacion cancelar orden: que el status del estado sea previamente válido para cancelar*/
+
+const orderStatusValidate = async (req,res,next) => {
+    
+    try {
+        const {order_id} = req.body;
+        const userOrder = await getOrderFullData (order_id)
+        if (userOrder[0].order_status_code === 2) {
+            res.status(400).send( new Response(true, 400, `La orden ${userOrder[0].order_id} ya se encuentra cancelada`, ));
+        } else if(userOrder[0].order_status_code === 6){
+            res.status(400).send( new Response(true, 400, `La orden ${userOrder[0].order_id} ya se encuentra entregada`, ));
+        } else {
+            next()
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(500).send(new Response(true, 500, 'No fue posible realizar la operacion', error));
+    }
+};
+
+/**Validacion cancelar orden:  que la orden exista y que los datos no sean nulos -  que la orden corresponda con el usuario que quiere eliminar */
+
+const orderDataValidate = async (req, res, next) => {
+    
+    // let rta;
+    const {user_id,order_id} = req.body;
 
     try {
-        const userAdmin = await selectUserAdmin(user_id)
-        console.log(`userAdmin ${userAdmin[0].user_admin}`);
-        if (userAdmin[0].user_admin == 1) {
-            try {
-                const orderUser = await getOrderById(user_id, order_id)
-                if (orderUser.order_id.length > 0) {
-                    try {
-                        const orderStatus = await getOrderFullData(order_id);
-                        const orderStatusCode = orderStatus.order_status_code;
-                        if (orderStatusCode !== 2 ||  orderStatusCode !== 6) { //esta no va
-                            next();
-                        }
-                    } catch (error) {
-                        rta = new Response(true, 400, "La orden que desea actializar, no existe", "");
-                        res.status(400).send(rta)
-                    }
-                } 
-            } catch (error) {
-                rta = new Response(true, 400, "El usuario debe tener privilegios de administrador para actualizar el estado de la orden", "");
-                res.status(400).send(rta)
+        
+        if (!order_id || !user_id) {
+            res.status(400).send(new Response(true, 400, "No se admiten campos vacíos", ""))
+        } else if (typeof (order_id) != 'number' || typeof (user_id) != 'number') {
+            res.status(400).send(new Response(true, 400, "Todos los campos deben ser numéricos", ""))
+        } else {
+            const getOrder = await getOrderById(order_id,user_id);
+            const admin = await selectUserAdmin(user_id)
+            if (getOrder.length === 0 && admin[0].user_admin !== 1){
+                res.status(400).send(new Response(true, 400, `La orden con id ${order_id} no pertenece al usuario con el id ${user_id}` , ""))
+            } else {
+                next();
             }
-        } else {console.log('no es administrador');}
+        };
     } catch (error) {
-        rta = new Response(true, 500, "No fue posible actualizar el estado de la orden", "");
-        res.status(500).send(rta)
+        res.status(500).send(new Response(true, 500, "No fue posible efectuar la operación", error))
     }
 }
 
-//que sea el usuario de la orden
-// que sea un codigo valido para cancelar (distinto a cancelado y distinto a entregado)
-//que viaje userId y OrderID y que los datos requeridos sean validos
+/*Validacion cambiar estado de orden: que el usuario sea administrador*/
 
+// const orderUserAdmin = async (req,res,next) => {
+//     try {
+//         const {user_id,order_id} = req.body;
+//         const response = await selectUserAdmin(user_id)
+//         const getOrder = await getOrderById(order_id,user_id)
+        
+//         if (response[0].user_admin === 1 || getOrder[0].user_id === user_id && getOrder[0].order_id === order_id) {
+//             next()
+//         }else{
+           
+//         //    console.log(`getOrder Usuario no administrador = ${getOrder}`);
+           
 
+//            res.status(200).send(new Response(false, 200, "El usuario no es admi",getOrder[0].user_id ))
+//         }        
+//     } catch (error) {
+//         res.status(409).send( new Response(true, 409, ` El usuario con el Id ${JSON.stringify(user_id)} debe ser administrador para efectuar la operación y el campo no puede estar vacío`, ""));
+//     };
+// };
 
 module.exports = {
     validateOrderProductData,
     validateOrderData,
     userIdValidate,
     confirmOrderDataValidate,
-    orderStatusDataValidate
+    userAdmin,
+    orderStatusData,
+    orderIn,
+    orderStatusValidate,
+    orderDataValidate,
+   /* orderUserAdmin*/
 };
 
 

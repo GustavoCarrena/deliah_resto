@@ -5,9 +5,9 @@ let rta;
 
 async function deleteProducts(req, res) {
     try {
-        let {product_id} = req.body;
-        let selProduct = await selectProductById(product_id);
-        let product_name = selProduct[0].product_name
+        const {product_id} = req.body;
+        const selProduct = await selectProductById(product_id);
+        const product_name = selProduct[0].product_name
         try {
             await OneDeleteProduct(product_id)
             rta = new Response(false, 200, "Plato eliminado exitosamente", `Se ha eliminado el plato '${product_name}' con el id '${product_id}'`);

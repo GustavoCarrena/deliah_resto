@@ -1,9 +1,9 @@
 class Response {
-    constructor(error,status,mensaje,respuesta) {
+    constructor(error,status,mensaje,response) {
         this.error=error,
         this.status=status,
         this.mensaje=mensaje,
-        this.respuesta=respuesta;
+        this.response=response;
     };
 };
 

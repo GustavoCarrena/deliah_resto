@@ -5,7 +5,7 @@ let arrayProduct = [];
 
 const updateProducts = (req, res) => {
 
-    let {email,product_id,data} = req.body;
+    const {product_id,data} = req.body;
 
     for (let key in data) {
         arrayProduct.push(`${key}='${data[key]}'`)
