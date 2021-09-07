@@ -225,13 +225,13 @@ const orderStatusValidate = async (req,res,next) => {
 const orderDataValidate = async (req, res, next) => {
     
     // let rta;
-    const {user_id,order_id} = req.body;
+    const {order_id,user_id} = req.body;
 
     try {
         
-        if (!order_id || !user_id) {
+        if (!user_id) {
             res.status(400).send(new Response(true, 400, "No se admiten campos vacíos", ""))
-        } else if (typeof (order_id) != 'number' || typeof (user_id) != 'number') {
+        } else if (typeof (user_id) != 'number') {
             res.status(400).send(new Response(true, 400, "Todos los campos deben ser numéricos", ""))
         } else {
             const getOrder = await getOrderById(order_id,user_id);
