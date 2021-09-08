@@ -11,6 +11,6 @@ router.post('/orderCreate',validateOrderProductData,validateOrderData,userIdVali
 router.put('/orderConfirm',confirmOrderDataValidate,orderUpdate);
 router.put('/orderStatus',userAdmin,orderStatusData,orderIn,orderStatusUpdate);
 router.put('/orderCancelStatus',orderDataValidate,orderStatusValidate,orderStatusCancel);
-router.get('/selectOrder',orderDataValidate,getOrderByUserId);
+router.get('/selectOrder',/*orderDataValidate,*/getOrderByUserId);
 
 module.exports = router; //app.js

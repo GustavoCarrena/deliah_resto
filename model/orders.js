@@ -96,14 +96,16 @@ const getOrderByUser = ( id ) => {
     })
 }
 
-const getOrderDescription = ( payment_code,order_status_code) => {
-    return sequelize.query(`SELECT o.status_id, o.payment_code, os.status_desc, pm.payment_desc 
-    FROM users u
-    INNER JOIN orders o 
-    ON (u.user_id = o.user_id) 
-    WHERE u.user_id = ? and o.order_status_code != ${orderCancelStatus} and o.order_status_code != ${orderFinishStatus};`, {
+const getOrderDescription = (dataCodes) => {
+    return sequelize.query(`SELECT o.order_status_code, o.payment_code, os.order_status_description, pm.payment_description 
+    FROM orders o
+    INNER JOIN order_status os 
+    ON (o.order_status_code = os.order_status_code) 
+    INNER JOIN payment_methods pm 
+    ON (o.payment_code = pm.payment_code) 
+    WHERE o.order_status_code = ? and o.payment_code = ?`, {
             type: sequelize.QueryTypes.SELECT,
-            replacements: [payment_code,order_status_code]
+            replacements: dataCodes
     })
 }
 
@@ -144,7 +146,8 @@ module.exports = {
     orderStatusDescription,
     getOrderFullData,
     cancelOrderSatus,
-    getOrderByUser
+    getOrderByUser,
+    getOrderDescription
 };
 
 
