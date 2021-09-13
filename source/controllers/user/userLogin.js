@@ -17,7 +17,7 @@ async function userLogin(req, res) {
             res.status(200).send(new Response(false, 200, "Usuario logueado exitosamente", {"ID Usuario": selectId[0].user_id, "Token":  token}))
         }
     } catch (error) {
-        res.status(401).send(new Response(true, 401, "No fue posible loguearse", error))
+        res.status(401).send(new Response(true, 500, "No fue posible loguearse", error))
     };
 };
 
