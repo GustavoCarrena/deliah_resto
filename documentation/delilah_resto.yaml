@@ -9,6 +9,8 @@ externalDocs:
 tags:
 - name: "user"
   description: "registro y logueo de usuario"
+- name: "products"
+  
 paths: 
   
   /user/userLogin:
@@ -68,6 +70,57 @@ paths:
           description: "Error Interno del Servidor"
           schema:
             $ref: "#/definitions/Errors"
+
+  /products/productCreate:
+    post:
+      tags:
+      - "products"
+      summary: "Endpoints CRUD de Productos" 
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "usuario perfil administrador puede dar de alta un plato "
+        required: true
+        schema:
+          type: "object"
+          properties:
+            email:
+              type: "string"
+              description: "email con el cual se registró"
+            product_name:
+              type: "string"
+              description: "identificación del plato a crear"
+            product_description:
+              type: "string"
+              description: "descripción comercial o ampliada del plato"
+            product_price:
+              type: "integer"
+              description: "precio del plato"
+              example: 1000
+            product_disponibilty:
+              type: "integer"
+              description: "Código 0 = Producto no disponible para incorporar en una orden / Código 1 = Producto disponible para incorporar en una orden"
+              example: 1
+      responses:
+        "200":
+          description: "ok"
+          schema:
+            type: "object"
+            properties:
+              error:
+                type: "boolean"
+                example: false
+              status:
+                type: "integer"
+                example: 200
+              message:
+                type: "string"
+                description: "mensaje respuesta"
+              response:
+                type: "string"
+                description: "mensaje respuesta"
+
+
 
 definitions:
   Errors:

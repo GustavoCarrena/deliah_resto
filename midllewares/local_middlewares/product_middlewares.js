@@ -16,6 +16,20 @@ const userAdminValidate = async (req,res,next) => {
     };
 };
 
+const productDataValidate = async (req,res,next) => {
+    const {email,product_name,product_description,product_price,product_disponibilty} = req.body;
+    if (email != null && product_name != null && product_description != null && product_price != null && product_disponibilty != null ) {
+        if (email.length > 0 && product_name.length > 0 && product_description.length > 0 &&  product_disponibilty === 0 || product_disponibilty === 1) {
+            next()
+        } else {
+            res.status(400).send(new Response(true, 400, "Todos los campos deben contener datos", ""));
+        };
+    } else {
+        res.status(400).send(new Response(true, 400, "Se requieren todos los campos", ""));
+    };
+}
+
+
 async function getProductId(req, res,next) {
     try {
         let {product_id} = req.body;
@@ -28,5 +42,5 @@ async function getProductId(req, res,next) {
     };
 };
 
-module.exports = {userAdminValidate,getProductId};
+module.exports = {userAdminValidate,getProductId,productDataValidate};
 
