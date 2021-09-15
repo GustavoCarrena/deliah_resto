@@ -1,6 +1,5 @@
 const Response = require('../../classes/response');
 const {selectUserEmail} = require('../../model/users');
-let rta;
 
 /* ==== Control de campos vacíos, inexistencia de campos obligatorios, usuario administrador ==== */
 
@@ -11,16 +10,13 @@ const userDataValidate = (req, res, next) => {
             if (user_admin === 1 || user_admin === 0 && user_admin !== "") {
                 next();
             } else {
-                rta = new Response(true, 400, "Los únicos valores admitidos para user_admin son 0 ó 1", "");
-                res.status(400).send(rta);
+                res.status(400).send(new Response(true, 400, "Los únicos valores admitidos para user_admin son 0 ó 1", ""));
             };
         } else {
-            rta = new Response(true, 400, "Todos los campos deben contener datos", "");
-            res.status(400).send(rta);
+            res.status(400).send(new Response(true, 400, "Todos los campos deben contener datos", ""));
         };
     } else {
-        rta = new Response(true, 400, "Se requieren todos los campos", "");
-        res.status(400).send(rta);
+        res.status(400).send(new Response(true, 400, "Se requieren todos los campos", ""));
     };
 };
 
@@ -36,36 +32,15 @@ const userEmailValidate = (req, res, next) => {
         if (userEmail.length == 0 ) {
             next();
         } else {
-            rta = new Response(true, 401, `El email (${userEmail[0].email}) ya se encuentra registrado`, "");
-            res.status(401).send(rta);
+            res.status(401).send(new Response(true, 401, `El email (${userEmail[0].email}) ya se encuentra registrado`, ""));
         }
     })
     .catch( (error) => {
-    rta = new Response(true, 500, "No fue posible generar el usuario", error);
-    res.status(500).send(rta)
+    res.status(500).send(new Response(true, 500, "No fue posible generar el usuario", error))
     });
 };
 
 
-
-
-// async function userEmailValidate(req, res, next) {
-//     try {
-//         const {email} = req.body;
-//         let userEmail = await selectUserEmail(email);
-//         if (email !== userEmail[0].email) {
-//             next()
-//             console.log("despues de next" + "  " + userEmail[0].email);
-//         } else {
-//             rta = new Response(true, 401, `El email ${userEmail[0].email} ya se encuentra registrado`, "");
-//             res.status(409).send(rta);
-           
-//         }
-//     } catch (error) {
-//          console.log('entro por catch');
-//         res.status(500).send({error});
-//     };
-// };
 
 /* ==== Control de campos vacíos Login ==== */
 
@@ -76,8 +51,7 @@ const userDataLoginValidate = (req, res, next) => {
             next();
         };
     } else {
-        rta = new Response(true, 400, "Se requieren todos los campos", "");
-        res.status(400).send(rta);
+        res.status(400).send(new Response(true, 400, "Se requieren todos los campos", ""));
     };
 };
 

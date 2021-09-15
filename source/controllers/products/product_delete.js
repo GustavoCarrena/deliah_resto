@@ -1,7 +1,6 @@
 const {selectProductById} = require('../../../model/products');
 const {OneDeleteProduct}  = require('../../../model/products');
 const Response = require('../../../classes/response.js');
-let rta;
 
 async function deleteProducts(req, res) {
     try {
@@ -10,15 +9,12 @@ async function deleteProducts(req, res) {
         const product_name = selProduct[0].product_name
         try {
             await OneDeleteProduct(product_id)
-            rta = new Response(false, 200, "Plato eliminado exitosamente", `Se ha eliminado el plato '${product_name}' con el id '${product_id}'`);
-            res.status(200).send(rta)
+            res.status(200).send(new Response(false, 200, "Plato eliminado exitosamente", `Se ha eliminado el plato '${product_name}' con el id '${product_id}'`))
         } catch (error) {
-            rta = new Response(true, 500, "No fue posible eliminar el plato", error);
-            res.status(500).send(rta)
+            res.status(500).send(new Response(true, 500, "No fue posible eliminar el plato", error))
         }
     } catch (error) {
-        rta = new Response(true, 500, "No existen platos en la selección", error);
-        res.status(500).send(rta)
+        res.status(500).send(new Response(true, 500, "No existen platos en la selección", error))
     };
 };
 

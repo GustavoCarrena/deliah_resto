@@ -1,6 +1,5 @@
 const {selectUserAdmin,updateProductById,selectProductById}  = require('../../../model/products');
 const Response = require('../../../classes/response.js');
-let rta;
 let arrayProduct = [];
 
 const updateProducts = (req, res) => {
@@ -17,15 +16,12 @@ const updateProducts = (req, res) => {
             await updateProductById(product_id, arrayProduct);
             try {
                 let selectProduct = await selectProductById(product_id);
-                rta = new Response(false, 200, "Plato actualizado exitosamente", selectProduct[0]);
-                res.status(200).send(rta);
+                res.status(200).send(new Response(false, 200, "Plato actualizado exitosamente", selectProduct[0]));
             } catch (error) {
-                rta = new Response(true, 500, "Error de conexion", error);
-                res.status(500).send(rta);
+                res.status(500).send(new Response(true, 500, "Error de conexion", error));
             }
         } catch (error) {
-            rta = new Response(true, 500, "No se pudo actualizar el plato", error);
-            res.status(500).send(rta)
+            res.status(500).send(new Response(true, 500, "No se pudo actualizar el plato", error))
         }
     };
     update();

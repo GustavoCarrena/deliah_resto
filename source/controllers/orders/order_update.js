@@ -6,29 +6,22 @@ const Response = require('../../../classes/response.js');
 
 async function orderUpdate(req,res) {
     
-    let rta;
     const {order_id,user_id,payment_code} = req.body;
 
     try {
 
         await updateOrder([payment_code,3,order_id]);
-        rta = new Response(false, 200, "Orden confirmada", ""); 
-        res.status(200).send(rta)
+        res.status(200).send(new Response(false, 200, "Orden confirmada", ""))
 
     } catch (error) {
-        rta = new Response(true, 500, "No fue posible", error); 
-        res.status(500).send(rta)
+        res.status(500).send(new Response(true, 500, "No fue posible", error))
     }
 }
 
 /*======= CAMBIAR STATUS DE ORDEN =======*/
 
 async function orderStatusUpdate(req,res) {
-    
-    
 
-
-    let rta;
     const {order_status_code,order_id} = req.body;
 
     try {
@@ -37,19 +30,15 @@ async function orderStatusUpdate(req,res) {
         
         try {
             let status = await orderStatusDescription ([order_status_code])
-            rta = new Response(false, 200, "Orden actualizada", status[0]);
-            res.status(200).send(rta)
+            res.status(200).send(new Response(false, 200, "Orden actualizada", status[0]))
         } catch (error) {
-            rta = new Response(true, 400, "No fue posible actualizar la orden", error); 
-            res.status(400).send(rta)
+            res.status(400).send(new Response(true, 400, "No fue posible actualizar la orden", error))
         }
         
     } catch (error) {
-        rta = new Response(true, 500, "No fue posible cambiar el estado de la orden", error); 
-        res.status(500).send(rta)
+        res.status(500).send(new Response(true, 500, "No fue posible cambiar el estado de la orden", error))
     }
 }
-
 
 
 module.exports = {orderUpdate,orderStatusUpdate};

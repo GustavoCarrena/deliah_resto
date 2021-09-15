@@ -19,10 +19,8 @@ async function totalPriceResponse(arrayProducts,id) {
 }
 
 
-
 async function orderCreate(req,res) {
     
-    let rta;
     
     try {
 
@@ -34,8 +32,7 @@ async function orderCreate(req,res) {
             try {
                 await insertInOrderTable([order_id, orderProducts[i].product_id, orderProducts[i].product_quantity]);
             } catch (error) {
-                rta = new Response(true, 500, "No se puede crear la orden", error);
-                res.status(500).send(rta);
+                res.status(500).send(new Response(true, 500, "No se puede crear la orden", error));
             }
         }
         try {

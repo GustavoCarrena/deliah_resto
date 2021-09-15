@@ -2,32 +2,8 @@ const {selectProductIfExist} = require('../../model/products');
 const {selectUserId,selectUserAdmin} = require('../../model/users');
 const {getOrderById,orderStatusDescription,getOrderFullData} = require('../../model/orders');
 const Response = require('../../classes/response');
-let rta;
 
 /*Valida que cuando se crea una orden, exista el producto*/
-// const validateOrderProductData = async (req, res, next) => {
-
-//     let {orderProducts} = req.body;
-
-//     orderProducts.reduce((products, order_product) => {
-//         let selectProduct = selectProductIfExist(order_product.product_id)
-//             .then(() => {
-//                 if (selectProduct.length === 0) {
-//                     products.push(`product_id: ${order_product.product_id}`)
-//                     console.log(`LOG idPush = ${products}`);
-                   
-//                 };
-//             }).catch((error) => {
-//                 res.status(500).send(new Response(true, 500, "No se pudo procesar la orden", error));
-//             })
-//     }, [])
-
-//     if (orderProducts.length) {
-//         res.status(404).send(new Response(true, 404, "Los siguientes Id de poductos solicitados son inexistentes o no están disponibles", ""));
-//     } else {
-//         next();
-//     };
-// }
 
 const validateOrderProductData = async (req, res, next) => {
     
@@ -43,8 +19,7 @@ const validateOrderProductData = async (req, res, next) => {
                 orderProductsArray.push(`product_id: ${orderProducts[i].product_id}`)
             };
         } catch (error) {
-            rta = new Response(true, 500, "No se pudo procesar la orden", error);
-            res.status(500).send(rta);
+            res.status(500).send(new Response(true, 500, "No se pudo procesar la orden", error));
         };
     }
     if( prodErr == true) {
@@ -81,8 +56,7 @@ const validateOrderData = (req, res, next) => {
     if (!orderError) {
         next();
     } else {
-        rta = new Response(true, 400, "Los campos deben contener datos válidos", "");
-        res.status(400).send(rta);
+        res.status(400).send(new Response(true, 400, "Los campos deben contener datos válidos", ""));
     }
 }
 
@@ -96,15 +70,13 @@ const userIdValidate = (req, res, next) => {
     selectUserId(order_header.user_id)
         .then(id => {
             if (id.length == 0) {
-                rta = new Response(true, 401, `El usuario no se encuentra registrado`, "");
-                res.status(401).send(rta);
+                res.status(401).send(new Response(true, 401, `El usuario no se encuentra registrado`, ""));
             } else {
                 next();
             }
         })
         .catch((error) => {
-            rta = new Response(true, 500, "No fue posible validar el Id del usuario", error);
-            res.status(500).send(rta)
+            res.status(500).send(new Response(true, 500, "No fue posible validar el Id del usuario", error))
         });
 };
 
@@ -112,25 +84,20 @@ const userIdValidate = (req, res, next) => {
 
 const confirmOrderDataValidate = async (req, res, next) => {
     
-    let rta;
     const {order_id,user_id,payment_code} = req.body;
 
     try {
         
         if (order_id == null || user_id == null || payment_code == null) {
-            rta = new Response(true, 400, "No se admiten campos vacíos", "");
-            res.status(400).send(rta)
+            res.status(400).send(new Response(true, 400, "No se admiten campos vacíos", ""))
         } else if (typeof (order_id) != 'number' || typeof (user_id) != 'number' || typeof (payment_code) != 'number') {
-            rta = new Response(true, 400, "Todos los campos deben ser numéricos", "");
-            res.status(400).send(rta)
+            res.status(400).send(new Response(true, 400, "Todos los campos deben ser numéricos", ""))
         } else if (payment_code === 1 ){
-            rta = new Response(true, 400, "El tipo de pago debe ser Efectivo o Tarjeta", `payment_code no admitido = ${payment_code}`);
-            res.status(400).send(rta)
+            res.status(400).send(new Response(true, 400, "El tipo de pago debe ser Efectivo o Tarjeta", `payment_code no admitido = ${payment_code}`))
         } else {
             const getOrder = await getOrderById(order_id,user_id);
             if (getOrder.length === 0){
-                rta = new Response(true, 400, "La orden no existe o el usuario con el que se intenta confirmar no se corresponde con la orden", "");
-                res.status(400).send(rta)
+                res.status(400).send(new Response(true, 400, "La orden no existe o el usuario con el que se intenta confirmar no se corresponde con la orden", ""))
             } else {
                 next();
             }
@@ -224,7 +191,6 @@ const orderStatusValidate = async (req,res,next) => {
 
 const orderDataValidate = async (req, res, next) => {
     
-    // let rta;
     const {order_id,user_id} = req.body;
 
     try {
