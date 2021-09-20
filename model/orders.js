@@ -30,7 +30,7 @@ const orderSummaryTotal = (id) => {
     INNER JOIN products p
     ON (o.product_id = p.product_id)
     WHERE o.order_id = ?;`,
-    { type: sequelize.QueryTypes.SELECT, replacements:[id],})
+    { type: sequelize.QueryTypes.SELECT, replacements:[id]})
 };
 
 const updateOrderPrice = (orderId) => {

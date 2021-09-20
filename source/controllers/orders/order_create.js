@@ -3,6 +3,7 @@ const Response = require('../../../classes/response.js');
 
 
 /*========== Devuelve objeto con array de los productos de la orden y array de total de la orden  ======================*/
+
 // async function totalPriceResponse(arrayProducts,id) {
 //     let dataProductObject = new Object();
 //     dataProductObject.dataArrayProduct= arrayProducts;
@@ -10,18 +11,15 @@ const Response = require('../../../classes/response.js');
 //     return dataProductObject;
 // }
 
-async function totalPriceResponse(arrayProducts,id) {
-    
+async function totalPriceResponse(dataArrayProducts, id) {
     return {
-        dataArrayProduct : arrayProducts,
-        totalOrder : await orderSummaryTotal(id)
-    }
+        dataArrayProducts,
+        totalOrder: await orderSummaryTotal(id)
+    };
 }
 
-
 async function orderCreate(req,res) {
-    
-    
+
     try {
 
         const {order_header,orderProducts} = req.body;
@@ -32,7 +30,7 @@ async function orderCreate(req,res) {
             try {
                 await insertInOrderTable([order_id, orderProducts[i].product_id, orderProducts[i].product_quantity]);
             } catch (error) {
-                res.status(500).send(new Response(true, 500, "No se puede crear la orden", error));
+                res.status(500).send(new Response(true, 500, "No se puede crear la orden ", error));
             }
         }
         try {
@@ -42,7 +40,7 @@ async function orderCreate(req,res) {
             await updateOrderPrice([total_or,order_id]) //actualiza tabla orden en el campo total por cada orden confirmada
             res.status(200).send(new Response(false, 200, "Orden creada exitosamente", totalOrderPrice));
         } catch (error) {
-            res.status(500).send(new Response(true, 500, "No se puede crear la orden", error));
+            res.status(500).send(new Response(true, 500, "No se puede crear la orden " , error));
         }
     } catch (error) {
         res.status(500).send(new Response(true, 500, "No se puede crear la orden", error))

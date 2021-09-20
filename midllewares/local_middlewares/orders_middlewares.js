@@ -29,6 +29,60 @@ const validateOrderProductData = async (req, res, next) => {
     };
 }
 
+// const validateOrderProductData = async (req, res, next) => {
+//     let err = false;
+//     const {orderProducts} = req.body;
+
+//     const orderProductsArray = orderProducts.reduce(async (productsAcum,product)=>{
+//         try {
+//             const selectProduct = await selectProductIfExist(product.product_id);
+//             if (!selectProduct.length)
+//             err = true;
+//             productsAcum.push(`product_id:  ${product.product_id}`)
+//         } catch (error) {
+//             res.status(500).send(new Response(true, 500, "No se pudo procesar la orden", error));
+//         }
+//     },[])
+
+//     if( err == true) {
+//         res.status(404).send(new Response(true, 404, "Los siguientes Id de poductos solicitados son inexistentes o no están disponibles", orderProductsArray));
+//     } else {
+//         next();
+//     };
+// }
+
+
+
+
+// const validateOrderProductData = async (req, res, next) => {
+//     let err = false;
+//     const {orderProducts} = req.body;
+    
+//     console.log(` log orderproducts ${JSON.stringify(orderProducts)}`);
+
+//     const orderProductsArray = orderProducts.reduce((productsAcum,product)=>{
+        
+//         let selectProduct = selectProductIfExist(product.product_id)
+        
+//         .then(()=>{
+//             if (selectProduct.length == 0 || selectProduct == 'undefined')
+//             err = true;
+//             productsAcum.push(`product_id:  ${product.product_id}`)
+//         }).catch((error)=>{
+            
+//             res.status(500).send(new Response(true, 500, "No se pudo procesar la orden", error))})
+//     },[])
+
+//     if( err == true) {
+//         res.status(404).send(new Response(true, 404, "Los siguientes Id de poductos solicitados son inexistentes o no están disponibles", orderProductsArray));
+//     } else {
+//         next();
+//     };
+// }
+
+
+
+
 const validateOrderData = (req, res, next) => {
     let orderError = false;
     let productsArray = [];
@@ -70,7 +124,7 @@ const userIdValidate = (req, res, next) => {
     selectUserId(order_header.user_id)
         .then(id => {
             if (id.length == 0) {
-                res.status(401).send(new Response(true, 401, `El usuario no se encuentra registrado`, ""));
+                res.status(404).send(new Response(true, 404, `El usuario no se encuentra registrado`, ""));
             } else {
                 next();
             }

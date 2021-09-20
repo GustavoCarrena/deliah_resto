@@ -8,16 +8,19 @@ externalDocs:
   url: "https://github.com/GustavoCarrena/delilah_resto"
 tags:
 - name: "user"
-  description: "registro y logueo de usuario"
+  description: "Registro y logueo de usuario"
 - name: "products"
-  
+  description: "CRUD de productos"
+- name: "orders"
+  description: "CRUD de orders"
+
 paths: 
   
   /user/userLogin:
     post:
       tags:
       - "user"
-      summary: "Logueo de usuario" 
+      summary: "Logueo de usuario"
       parameters:
       - in: "body"
         name: "body"
@@ -71,11 +74,65 @@ paths:
           schema:
             $ref: "#/definitions/Errors"
 
+  /user/userCreate:
+    post:
+      tags:
+      - "user"
+      summary: "Alta de Usuario" 
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Alta de un usuario con ingreso de datos requeridos"
+        required: true
+        schema:
+          type: "object"
+          properties:
+            email:
+              type: "string"
+            fullname:
+              type: "string"
+            phone:
+              type: "string"
+            adress:
+              type: "string"
+            user_password:
+              type: "string"
+            user_admin:
+              type: integer
+              description: "Usuario adminstrador = 1 / Usuario sin privilegios de administrador = 0"
+              example: 0
+      responses:
+        "201":
+          description: "Usuario creado exitosamente"
+          schema:
+            type: "object"
+            properties:
+              error:
+                type: "boolean"
+                example: false
+              status:
+                type: "integer"
+                example: 201
+              message:
+                type: "string"
+                description: "mensaje respuesta"
+              response:
+                type: "string"
+                description: id del usuario xx creado exitosamente
+        "400":
+          description: "Los únicos valores admitidos para user_admin son 0 ó 1, Todos los campos deben contenter datos"
+          schema:
+            $ref: "#/definitions/Errors"
+        "500":
+          description: "Error Interno del Servidor"
+          schema:
+            $ref: "#/definitions/Errors"
+  
   /products/productCreate:
     post:
       tags:
       - "products"
-      summary: "Endpoints CRUD de Productos" 
+      summary: "Alta de Productos" 
       parameters:
       - in: "body"
         name: "body"
@@ -119,6 +176,280 @@ paths:
               response:
                 type: "string"
                 description: "mensaje respuesta"
+        "400":
+          description: "Todos los campos deben contenter datos"
+          schema:
+            $ref: "#/definitions/Errors"
+        "401":
+          description: "No se encontró token de autorización"
+          schema:
+            $ref: "#/definitions/Errors"
+        "500":
+          description: "Error Interno del Servidor"
+          schema:
+            $ref: "#/definitions/Errors"
+
+  /products/getAllProducts:
+    get:
+      tags:
+      - "products"
+      summary: "Consulta de Productos"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Cualquier usuario registrado y logueado puede solicitar la cantidad total de productos disponibles"
+        required: false
+        schema:
+          description: "No se envían datos desde el body"
+      responses:
+        "200":
+          description: "Devuelve todos platos disponibles"
+          schema:
+            type: "object"
+            properties:
+              error:
+                type: "boolean"
+                example: false
+              status:
+                type: "integer"
+                example: 200
+              message:
+                type: "string"
+                description: "Consulta generada exitosamente"
+              response:
+                type: "array"
+                items:
+                  properties:
+                    product_id:
+                      type: "integer"
+                      description: "Id generado autoincrementalmente"
+                    product_name:
+                      type: "string"
+                      description: "nombre del producto"
+                    product_description:
+                      type: "string"
+                      description: "descripción del producto"
+                    product_price:
+                      type: "integer"
+                      description: "precio del producto"
+                    product_disponibilty:
+                      type: "integer"
+                      description: "solamente arroja resultados de la búsqueda los productos disponibles"
+        "401":
+          description: "No existen productos o no existen productos disponibles / No se encontró toquen de autorización"
+          schema:
+            $ref: "#/definitions/Errors"
+        "500":
+          description: "Error Interno del Servidor"
+          schema:
+            $ref: "#/definitions/Errors"
+
+  /products/deleteProduct:
+    delete:
+      tags:
+      - "products"
+      summary: "Eliminación de Productos"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Usuario registrado, logueado y con privilegios de administrador (user_admin = 1) puede eliminar un producto"
+        required: true
+        schema:
+          type: "object"
+          properties:
+              user_id:
+                type: "integer"
+                description: "id del usuario"
+              product_id:
+                type: "integer"
+                description: "id del producto a eliminar"
+      responses:
+        "200":
+          description: "Eliminación de plato exitosa"
+          schema:
+            type: "object"
+            properties:
+              error:
+                type: "boolean"
+                example: false
+              status:
+                type: "integer"
+                example: 200
+              message:
+                type: "string"
+                description: "Plato eliminado exitosamente"
+              response:
+                type: "string"
+        "401":
+          description: "EL usaurio debe ser administrador / No se encontró toquen de autorización / el Id del producto no existe"
+          schema:
+            $ref: "#/definitions/Errors"
+        "500":
+          description: "Error Interno del Servidor"
+          schema:
+            $ref: "#/definitions/Errors"
+
+  /products/updateProduct:
+    put:
+      tags:
+      - "products"
+      summary: "Actualización de Productos"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Usuario registrado, logueado y con privilegios de administrador (user_admin = 1) puede actualizar valores de un producto"
+        required: true
+        schema:
+          type: "object"
+          properties:
+              user_id:
+                type: "integer"
+                description: "id del usuario"
+              product_id:
+                type: "integer"
+                description: "id del producto a eliminar"
+              data:
+                type: "object"
+                description: "datos para actualizar los datos del producto"
+                properties:
+                  product_name:
+                    type: "string"
+                  product_description:
+                    type: "string"
+                  product_price:
+                    type: "integer"
+                  product_disponibilty:
+                    type: "integer"
+                    description: "Únicos valores admitidos: 1 = producto disponible / 0 = producto no disponible"
+                    example: 1
+      responses:
+        "200":
+          description: "Actualización de plato exitosa"
+          schema:
+            type: "object"
+            properties:
+              error:
+                type: "boolean"
+                example: false
+              status:
+                type: "integer"
+                example: 200
+              message:
+                type: "string"
+                description: "Plato actualizado exitosamente"
+              response:
+                type: "object"
+                description: "datos para actualizar los datos del producto"
+                properties:
+                  product_name:
+                    type: "string"
+                  product_description:
+                    type: "string"
+                  product_price:
+                    type: "integer"
+                  product_disponibilty:
+                    type: "integer"
+        "401":
+          description: "EL usaurio debe ser administrador / No se encontró toquen de autorización / el Id del producto no existe"
+          schema:
+            $ref: "#/definitions/Errors"
+        "500":
+          description: "Error Interno del Servidor"
+          schema:
+            $ref: "#/definitions/Errors"
+
+  /orders/orderCreate:
+    post:
+      tags:
+      - "orders"
+      summary: "Creación de órdenes"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Usuario registrado y logueado, crea una orden"
+        required: true
+        schema:
+          type: "object"
+          properties:
+            order_header:
+                type: "object"
+                description: "datos del usuario"
+                properties:
+                  user_id:
+                    type: "integer"
+                  order_adress:
+                    type: "string"
+            orderProducts:
+                type: "array"
+                description: " 1 objeto por cada producto seleccionado"
+                items:
+                  type: "object"
+                  properties:
+                    product_id:
+                      type: "integer"
+                    product_quantity:
+                      type: "integer"
+                      example: 5
+      responses:
+        "200":
+          description: "Ok"
+          schema:
+            type: "object"
+            properties:
+              error:
+                type: "boolean"
+                example: false
+              status:
+                type: "integer"
+                example: 200
+              message:
+                type: "string"
+                description: "Orden creada exitosamente"
+              response:
+                type: "object"
+                description: "array de objeto"
+                properties:
+                  dataArrayProducts:
+                    type: "array"
+                    items:
+                      type: "object"
+                      properties:
+                        order_id:
+                          type: "integer"
+                        product_id:
+                          type: "integer"
+                        product_name:
+                          type: "string"
+                        product_price:
+                          type: "integer"
+                        precio total por producto:
+                          type: "integer"
+        "404":
+          description: "El usuario no se encuentra registrado ó hay poductos inexistentes o no disponibles"
+          schema:
+            type: "object"
+            properties:
+              error:
+                type: "boolean"
+                example: true
+              status:
+                type: "integer"
+                example: 404
+              message:
+                type: "string"
+              response:
+                type: "array"
+                description: "Id de productos que son inexistentes o no disponibles"
+                items:
+                  type: "integer"
+                  description: "cuando el producto no exista o no se encuentre disponible, devuelve el id del producto. Cuando el usuario no se encunetre registrado, no devuelve ningun valor"
+        "500":
+          description: "Error Interno del Servidor"
+          schema:
+            $ref: "#/definitions/Errors"
+
+
+
 
 
 
