@@ -11,4 +11,4 @@ router.get('/getAllProducts',getAllProducts);
 router.delete('/deleteProduct',userAdminValidate,getProductId,deleteProducts);
 router.put('/updateProduct',userAdminValidate,getProductId,updateProducts);
 
-module.exports = router; //app.js
+module.exports = router;

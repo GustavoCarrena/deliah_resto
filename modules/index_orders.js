@@ -6,11 +6,10 @@ const {orderStatusCancel} = require('../source/controllers/orders/order_cancel')
 const {getOrderByUserId} = require('../source/controllers/orders/order_select_user');
 const router = express.Router();
 
+router.post('/orderCreate', validateOrderProductData, validateOrderData, userIdValidate, orderCreate);
+router.put('/orderConfirm', confirmOrderDataValidate, orderUpdate);
+router.put('/orderStatus', userAdmin, orderStatusData, orderIn, orderStatusUpdate);
+router.put('/orderCancelStatus', orderDataValidate, orderStatusValidate, orderStatusCancel);
+router.get('/selectOrder/:user_id', orderDataValidateByParams, getOrderByUserId);
 
-router.post('/orderCreate',validateOrderProductData,validateOrderData,userIdValidate, orderCreate);
-router.put('/orderConfirm',confirmOrderDataValidate,orderUpdate);
-router.put('/orderStatus',userAdmin,orderStatusData,orderIn,orderStatusUpdate);
-router.put('/orderCancelStatus',orderDataValidate,orderStatusValidate,orderStatusCancel);
-router.get('/selectOrder/:user_id',orderDataValidateByParams,getOrderByUserId);
-
-module.exports = router; //app.js
+module.exports = router;

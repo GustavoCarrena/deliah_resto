@@ -1,6 +1,11 @@
 const {insertNewUser} = require('../../../model/users.js');
 const Response = require('../../../classes/response.js');
 
+/*
+ * Inserta datos nuevo usuario en tabla de usuarios
+ * Devuelve el Id del nuevo usuario
+ */
+
 async function userCreate(req, res) {
     try {
         const {email,fullname,phone,adress,user_password,user_admin} = req.body;
@@ -11,4 +16,4 @@ async function userCreate(req, res) {
     };
 };
 
-module.exports = {userCreate,}; //exporta a modules/index_users
+module.exports = {userCreate};

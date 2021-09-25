@@ -1,6 +1,5 @@
 const sequelize = require('../database_conection/conection.js');
 
-
 const insertNewUser = (newUserData) => {
     return sequelize.query("INSERT INTO users (email,fullname,phone,adress,user_password,user_admin) VALUES(?,?,?,?,MD5(?),?)", {
         type: sequelize.QueryTypes.INSERT,
@@ -59,4 +58,4 @@ module.exports = {
     selectUserIdByEmail,
     selectUserAdmin,
     selectEmailById
-}; //a controllers/user_create
+};

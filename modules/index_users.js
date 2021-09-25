@@ -6,10 +6,8 @@ const {userLogin} = require('../source/controllers/user/userLogin');
 const {userDataValidate,userEmailValidate} = require('../midllewares/local_middlewares/users_middlewares');
 const{userDataLoginValidate} = require ('../midllewares/local_middlewares/users_middlewares')
 
-//subrutas de usuarios
-
 router.post('/userCreate',userDataValidate,userEmailValidate,userCreate); 
 router.post('/userLogin',userDataLoginValidate,userLogin);
 
-module.exports = router; //app.js
+module.exports = router;
 

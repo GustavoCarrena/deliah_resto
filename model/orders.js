@@ -7,7 +7,6 @@ const insertNewOrder = (newOrder) => {
     });
 };
 
-
 const insertInOrderTable = (product) => {
     return sequelize.query("INSERT INTO order_products (order_id, product_id, product_quantity) VALUES(?,?,?)", {
         type: sequelize.QueryTypes.INSERT,
@@ -20,8 +19,10 @@ const orderSummary = (id) => {
     FROM order_products o 
     INNER JOIN products p 
     ON (o.product_id = p.product_id)
-    WHERE o.order_id = ?;`,
-    { type: sequelize.QueryTypes.SELECT,replacements:[id],})
+    WHERE o.order_id = ?;`, {
+        type: sequelize.QueryTypes.SELECT,
+        replacements: [id],
+    })
 };
 
 const orderSummaryTotal = (id) => {
@@ -29,8 +30,10 @@ const orderSummaryTotal = (id) => {
     FROM order_products o
     INNER JOIN products p
     ON (o.product_id = p.product_id)
-    WHERE o.order_id = ?;`,
-    { type: sequelize.QueryTypes.SELECT, replacements:[id]})
+    WHERE o.order_id = ?;`, {
+        type: sequelize.QueryTypes.SELECT,
+        replacements: [id]
+    })
 };
 
 const updateOrderPrice = (orderId) => {
@@ -40,7 +43,6 @@ const updateOrderPrice = (orderId) => {
     });
 }
 
-
 const updateOrder = (order) => {
     return sequelize.query("UPDATE orders SET order_status_code = ?, payment_code = ? WHERE order_id = ?", {
         type: sequelize.QueryTypes.UPDATE,
@@ -48,17 +50,17 @@ const updateOrder = (order) => {
     });
 }
 
-const getOrderById = (userid,orderid) =>{
-    return sequelize.query("SELECT user_id, order_id FROM orders WHERE order_id = ? AND user_id = ?",{ 
-        type: sequelize.QueryTypes.SELECT, 
-        replacements:[userid,orderid],
+const getOrderById = (userid, orderid) => {
+    return sequelize.query("SELECT user_id, order_id FROM orders WHERE order_id = ? AND user_id = ?", {
+        type: sequelize.QueryTypes.SELECT,
+        replacements: [userid, orderid],
     })
 }
 
-const getOrderByUserId = (userid,orderid) =>{
-    return sequelize.query("SELECT user_id, order_id FROM orders WHERE user_id = ?",{ 
-        type: sequelize.QueryTypes.SELECT, 
-        replacements:[userid,orderid],
+const getOrderByUserId = (userid, orderid) => {
+    return sequelize.query("SELECT user_id, order_id FROM orders WHERE user_id = ?", {
+        type: sequelize.QueryTypes.SELECT,
+        replacements: [userid, orderid],
     })
 }
 
@@ -76,21 +78,21 @@ const cancelOrderSatus = (order) => {
     });
 }
 
-const orderStatusDescription = ( id ) => {
+const orderStatusDescription = (id) => {
     return sequelize.query('SELECT * FROM order_status WHERE order_status_code = ?', {
-            type: sequelize.QueryTypes.SELECT,
-            replacements: [id]
+        type: sequelize.QueryTypes.SELECT,
+        replacements: [id]
     })
 }
 
-const getOrderFullData = ( id ) => {
+const getOrderFullData = (id) => {
     return sequelize.query('SELECT * FROM orders WHERE order_id = ?', {
-            type: sequelize.QueryTypes.SELECT,
-            replacements: [id]
+        type: sequelize.QueryTypes.SELECT,
+        replacements: [id]
     })
 }
 
-const getOrderByUser = ( id ) => {
+const getOrderByUser = (id) => {
     const orderCancelStatus = 2;
     const orderFinishStatus = 6;
     return sequelize.query(`SELECT u.fullname, o.order_adress, o.order_id, o.order_status_code, o.payment_code 
@@ -98,8 +100,8 @@ const getOrderByUser = ( id ) => {
     INNER JOIN orders o 
     ON (u.user_id = o.user_id) 
     WHERE u.user_id = ? and o.order_status_code != ${orderCancelStatus} and o.order_status_code != ${orderFinishStatus};`, {
-            type: sequelize.QueryTypes.SELECT,
-            replacements: [id]
+        type: sequelize.QueryTypes.SELECT,
+        replacements: [id]
     })
 }
 
@@ -111,19 +113,17 @@ const getOrderDescription = (dataCodes) => {
     INNER JOIN payment_methods pm 
     ON (o.payment_code = pm.payment_code) 
     WHERE o.order_status_code = ? and o.payment_code = ?`, {
-            type: sequelize.QueryTypes.SELECT,
-            replacements: dataCodes
+        type: sequelize.QueryTypes.SELECT,
+        replacements: dataCodes
     })
 }
 
-const getUserAdminByEmail = ( email ) => {
+const getUserAdminByEmail = (email) => {
     return sequelize.query('SELECT user_admin FROM users WHERE email = ?', {
-            type: sequelize.QueryTypes.SELECT,
-            replacements: [email]
+        type: sequelize.QueryTypes.SELECT,
+        replacements: [email]
     })
 }
-
-
 
 module.exports = {
     insertNewOrder,
@@ -142,6 +142,3 @@ module.exports = {
     getOrderByUserId,
     getUserAdminByEmail
 };
-
-
-
