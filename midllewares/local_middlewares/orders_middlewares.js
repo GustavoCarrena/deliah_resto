@@ -1,6 +1,6 @@
 const {selectProductIfExist} = require('../../model/products');
-const {selectUserId,selectUserAdmin} = require('../../model/users');
-const {getOrderById,orderStatusDescription,getOrderFullData} = require('../../model/orders');
+const {selectUserId,selectUserAdmin,selectEmailById} = require('../../model/users');
+const {getOrderById,orderStatusDescription,getOrderFullData,getOrderByUser,getUserAdminByEmail} = require('../../model/orders');
 const Response = require('../../classes/response');
 
 /*Valida que cuando se crea una orden, exista el producto*/
@@ -146,18 +146,18 @@ const confirmOrderDataValidate = async (req, res, next) => {
             res.status(400).send(new Response(true, 400, "No se admiten campos vacíos", ""))
         } else if (typeof (order_id) != 'number' || typeof (user_id) != 'number' || typeof (payment_code) != 'number') {
             res.status(400).send(new Response(true, 400, "Todos los campos deben ser numéricos", ""))
-        } else if (payment_code === 1 ){
-            res.status(400).send(new Response(true, 400, "El tipo de pago debe ser Efectivo o Tarjeta", `payment_code no admitido = ${payment_code}`))
+        } else if (payment_code != 2 && payment_code != 3 ){
+            res.status(404).send(new Response(true, 404, "El tipo de pago debe ser 2 = Efectivo ó 3 = Tarjeta", `payment_code no admitido = ${payment_code}`))
         } else {
             const getOrder = await getOrderById(order_id,user_id);
             if (getOrder.length === 0){
-                res.status(400).send(new Response(true, 400, "La orden no existe o el usuario con el que se intenta confirmar no se corresponde con la orden", ""))
+                res.status(403).send(new Response(true, 403, "La orden no existe o el usuario con el que se intenta confirmar no se corresponde con la orden", ""))
             } else {
                 next();
             }
         };
     } catch (error) {
-        res.status(500).send(new Response(true, 500, "No fue posible confirmar la orden", error))
+        res.status(500).send(new Response(true, 500, "Error del servidor", ""))
     }
 }
 
@@ -171,7 +171,7 @@ const userAdmin = async (req,res,next) => {
         if (response[0].user_admin === 1 ) {
             next()
         }else{
-            res.status(409).send( new Response(true, 409, ` El usuario con el Id ${JSON.stringify(user_id)} debe ser administrador para efectuar la operación y el campo no puede estar vacío`, ""));
+            res.status(403).send( new Response(true, 403, ` El usuario con el Id ${JSON.stringify(user_id)} debe ser administrador para efectuar la operación y el campo no puede estar vacío`, ""));
         }        
     } catch (error) {
         res.status(500).send(new Response(true, 500, 'No se pudo realizar la operación', error));
@@ -246,7 +246,7 @@ const orderStatusValidate = async (req,res,next) => {
 const orderDataValidate = async (req, res, next) => {
     
     const {order_id,user_id} = req.body;
-
+    
     try {
         
         if (!user_id) {
@@ -257,7 +257,7 @@ const orderDataValidate = async (req, res, next) => {
             const getOrder = await getOrderById(order_id,user_id);
             const admin = await selectUserAdmin(user_id)
             if (getOrder.length === 0 && admin[0].user_admin !== 1){
-                res.status(400).send(new Response(true, 400, `La orden con id ${order_id} no pertenece al usuario con el id ${user_id}` , ""))
+                res.status(403).send(new Response(true, 403, `La orden no pertenece al usuario o el mismo no tiene privilegios de administrador` , {"order_id": order_id, "user_id":  user_id}))
             } else {
                 next();
             }
@@ -267,27 +267,29 @@ const orderDataValidate = async (req, res, next) => {
     }
 }
 
-/*Validacion cambiar estado de orden: que el usuario sea administrador*/
+const orderDataValidateByParams = async (req, res, next) => {
+    
+    const {user_id} = req.params;
 
-// const orderUserAdmin = async (req,res,next) => {
-//     try {
-//         const {user_id,order_id} = req.body;
-//         const response = await selectUserAdmin(user_id)
-//         const getOrder = await getOrderById(order_id,user_id)
+    try {
         
-//         if (response[0].user_admin === 1 || getOrder[0].user_id === user_id && getOrder[0].order_id === order_id) {
-//             next()
-//         }else{
-           
-//         //    console.log(`getOrder Usuario no administrador = ${getOrder}`);
-           
+            const getOrder = await getOrderByUser(user_id);
+            const admin = await getUserAdminByEmail(req.user['email']);
+            const emailById = await selectEmailById(user_id);
 
-//            res.status(200).send(new Response(false, 200, "El usuario no es admi",getOrder[0].user_id ))
-//         }        
-//     } catch (error) {
-//         res.status(409).send( new Response(true, 409, ` El usuario con el Id ${JSON.stringify(user_id)} debe ser administrador para efectuar la operación y el campo no puede estar vacío`, ""));
-//     };
-// };
+            if (getOrder.length == 0) {
+                res.status(403).send(new Response(true, 403, `El usuario no tiene órdenes pendientes` , ""))
+            } else if (admin[0].user_admin !== 1 && req.user['email'] !== emailById[0].email) {
+                res.status(401).send(new Response(true, 401, `El usuario logueado no tiene permisos para consultar esas órdenes` , ""))
+            }  
+            else {
+                next();
+            };
+        
+    } catch (error) {
+        res.status(500).send(new Response(true, 500, "No fue posible efectuar la operación", error));
+    }
+};
 
 module.exports = {
     validateOrderProductData,
@@ -299,7 +301,7 @@ module.exports = {
     orderIn,
     orderStatusValidate,
     orderDataValidate,
-   /* orderUserAdmin*/
+    orderDataValidateByParams
 };
 
 

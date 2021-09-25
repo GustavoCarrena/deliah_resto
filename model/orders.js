@@ -16,7 +16,7 @@ const insertInOrderTable = (product) => {
 };
 
 const orderSummary = (id) => {
-    return sequelize.query(`SELECT o.order_id, p.product_id,p.product_name, o.product_quantity, p.product_price,(o.product_quantity * p.product_price) AS "precio total por producto"
+    return sequelize.query(`SELECT p.product_id,p.product_name, o.product_quantity, p.product_price,(o.product_quantity * p.product_price) AS "precio total por producto"
     FROM order_products o 
     INNER JOIN products p 
     ON (o.product_id = p.product_id)
@@ -50,6 +50,13 @@ const updateOrder = (order) => {
 
 const getOrderById = (userid,orderid) =>{
     return sequelize.query("SELECT user_id, order_id FROM orders WHERE order_id = ? AND user_id = ?",{ 
+        type: sequelize.QueryTypes.SELECT, 
+        replacements:[userid,orderid],
+    })
+}
+
+const getOrderByUserId = (userid,orderid) =>{
+    return sequelize.query("SELECT user_id, order_id FROM orders WHERE user_id = ?",{ 
         type: sequelize.QueryTypes.SELECT, 
         replacements:[userid,orderid],
     })
@@ -109,28 +116,12 @@ const getOrderDescription = (dataCodes) => {
     })
 }
 
-/*
-select o.status_id, o.payment_code, os.status_desc, pm.payment_desc 
-from orders o
-join order_status os 
-on (o.status_id = os.status_id)
-join payment_methods pm 
-on (o.payment_code = pm.payment_code) where o.status_id = 3 and o.payment_code = 2; 
-
-*/
-
-
-
-// const getorderByUser = (id) => {
-//     return sequelize.query(`SELECT o.order_id, o.adress, p.product_price,(o.product_quantity * p.product_price) AS "total por producto"
-//     FROM order_products o 
-//     INNER JOIN products p 
-//     ON (o.product_id = p.product_id)
-//     WHERE o.order_id = ?;`,
-//     { type: sequelize.QueryTypes.SELECT,
-//     replacements:[id],})
-// };
-
+const getUserAdminByEmail = ( email ) => {
+    return sequelize.query('SELECT user_admin FROM users WHERE email = ?', {
+            type: sequelize.QueryTypes.SELECT,
+            replacements: [email]
+    })
+}
 
 
 
@@ -147,7 +138,9 @@ module.exports = {
     getOrderFullData,
     cancelOrderSatus,
     getOrderByUser,
-    getOrderDescription
+    getOrderDescription,
+    getOrderByUserId,
+    getUserAdminByEmail
 };
 
 

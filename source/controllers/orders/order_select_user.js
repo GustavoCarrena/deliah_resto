@@ -4,7 +4,7 @@ const Response = require('../../../classes/response.js');
 
 async function getOrderByUserId(req, res) {
     let arrayOrders = [];
-    const {user_id} = req.body;
+    const {user_id} = req.params;
    
     try {
         const SelectOrderByUser = await getOrderByUser(user_id)
