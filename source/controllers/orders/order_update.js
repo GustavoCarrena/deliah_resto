@@ -9,7 +9,7 @@ async function orderUpdate(req,res) {
         res.status(200).send(new Response(false, 200, "Orden confirmada", ""))
     } catch (error) {
         res.status(500).send(new Response(true, 500, "Error del servidor", ""))
-    }
+    };
 }
 
 /*Actualiza el estado de la orden*/

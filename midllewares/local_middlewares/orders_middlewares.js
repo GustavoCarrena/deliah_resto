@@ -4,13 +4,10 @@ const {getOrderById,orderStatusDescription,getOrderFullData,getOrderByUser,getUs
 const Response = require('../../classes/response');
 
 /*Valida que cuando se crea una orden, exista el producto*/
-
 const validateOrderProductData = async (req, res, next) => {
-    
     let prodErr = false;
     let orderProductsArray = [];
     let {orderProducts} = req.body;
-    
     for (let i = 0; i < orderProducts.length; i++) {
         try {
             let selectProduct = await selectProductIfExist(orderProducts[i].product_id);
@@ -27,100 +24,38 @@ const validateOrderProductData = async (req, res, next) => {
     } else {
         next();
     };
-}
+};
 
-// const validateOrderProductData = async (req, res, next) => {
-//     let err = false;
-//     const {orderProducts} = req.body;
-
-//     const orderProductsArray = orderProducts.reduce(async (productsAcum,product)=>{
-//         try {
-//             const selectProduct = await selectProductIfExist(product.product_id);
-//             if (!selectProduct.length)
-//             err = true;
-//             productsAcum.push(`product_id:  ${product.product_id}`)
-//         } catch (error) {
-//             res.status(500).send(new Response(true, 500, "No se pudo procesar la orden", error));
-//         }
-//     },[])
-
-//     if( err == true) {
-//         res.status(404).send(new Response(true, 404, "Los siguientes Id de poductos solicitados son inexistentes o no están disponibles", orderProductsArray));
-//     } else {
-//         next();
-//     };
-// }
-
-
-
-
-// const validateOrderProductData = async (req, res, next) => {
-//     let err = false;
-//     const {orderProducts} = req.body;
-    
-//     console.log(` log orderproducts ${JSON.stringify(orderProducts)}`);
-
-//     const orderProductsArray = orderProducts.reduce((productsAcum,product)=>{
-        
-//         let selectProduct = selectProductIfExist(product.product_id)
-        
-//         .then(()=>{
-//             if (selectProduct.length == 0 || selectProduct == 'undefined')
-//             err = true;
-//             productsAcum.push(`product_id:  ${product.product_id}`)
-//         }).catch((error)=>{
-            
-//             res.status(500).send(new Response(true, 500, "No se pudo procesar la orden", error))})
-//     },[])
-
-//     if( err == true) {
-//         res.status(404).send(new Response(true, 404, "Los siguientes Id de poductos solicitados son inexistentes o no están disponibles", orderProductsArray));
-//     } else {
-//         next();
-//     };
-// }
-
-
-
-
+/*Valida que los datos de las órdenes no sean nulos y tengan el formato correcto*/
 const validateOrderData = (req, res, next) => {
     let orderError = false;
     let productsArray = [];
     const {order_header,orderProducts} = req.body;
     const {user_id,order_adress} = order_header
-    
     if (order_header == null || orderProducts == null) {
         orderError = true;
     } else {
         productsArray = orderProducts;
-
         if (user_id == null || order_adress == null || user_id.length <= 0 || order_adress.length <= 0) {
             orderError = true;
         }
-        
         for (let i = 0; i < productsArray.length; i++) {
-
             if (productsArray[i].product_id == null || productsArray[i].product_quantity == null || typeof (productsArray[i].product_id) != 'number' || typeof (productsArray[i].product_quantity) != 'number') {
                 orderError = true;
                 break;
-            }
+            };
         }
-    }
-
+    };
     if (!orderError) {
         next();
     } else {
         res.status(400).send(new Response(true, 400, "Los campos deben contener datos válidos", ""));
-    }
-}
+    };
+    };
 
-
-/* ========= VALIDA QUE EL USUARIO EXISTA PARA CREAR UNA ORDEN =============*/
-
+/* Valida que el usuario se encuentre registrado para crear una orden */
 const userIdValidate = (req, res, next) => {
-
     const {order_header} = req.body;
-
     selectUserId(order_header.user_id)
         .then(id => {
             if (id.length == 0) {
@@ -134,14 +69,15 @@ const userIdValidate = (req, res, next) => {
         });
 };
 
-/* ========= Validacion confirmar orden: 1) los datos ingresados existan y tengan formato requerido, 2) La orden y el usuario existan =============*/
-
+/*
+*   Para confirmar orden 
+*   que los datos ingresados existan y tengan requerimientos de formato y código
+*   que la orden exista
+*   que el usuario que confirma sea quien lo solicitó
+*/
 const confirmOrderDataValidate = async (req, res, next) => {
-    
     const {order_id,user_id,payment_code} = req.body;
-
     try {
-        
         if (order_id == null || user_id == null || payment_code == null) {
             res.status(400).send(new Response(true, 400, "No se admiten campos vacíos", ""))
         } else if (typeof (order_id) != 'number' || typeof (user_id) != 'number' || typeof (payment_code) != 'number') {
@@ -158,16 +94,14 @@ const confirmOrderDataValidate = async (req, res, next) => {
         };
     } catch (error) {
         res.status(500).send(new Response(true, 500, "Error del servidor", ""))
-    }
-}
+    };
+};
 
-/*Validacion cambiar estado de orden: que el usuario sea administrador*/
-
+/*Valida que el usuario sea administrador*/
 const userAdmin = async (req,res,next) => {
     try {
         const {user_id} = req.body;
         const response = await selectUserAdmin(user_id)
-        
         if (response[0].user_admin === 1 ) {
             next()
         }else{
@@ -178,9 +112,7 @@ const userAdmin = async (req,res,next) => {
     };
 };
 
-/*Validacion cambiar estado de orden: que el formato de datos de la orden y del estado sean validos*/
-
-
+/*Valida que el formato de datos de la orden y del estado sean validos*/
 const orderStatusData = (req,res,next) => {
     try {
         const {order_status_code, order_id} = req.body;
@@ -195,21 +127,17 @@ const orderStatusData = (req,res,next) => {
     };
 };
 
-/*Validacion cambiar estado de orden: que el estado ingresado y que la orden existan*/
-
+/*Valida que el estado ingresado y que la orden existan*/
 const orderIn = async (req,res,next) => {
     try {
-        
         const {order_status_code,order_id} = req.body;
         const order_status_codeE = await orderStatusDescription(order_status_code);
         const order_idE = await getOrderFullData(order_id);
-        
         if (order_status_codeE.length === 0) {
             res.status(400).send( new Response(true, 400, "El estado que desea asignar no existe", ""));
         } else if (order_idE.length === 0  ){
             res.status(400).send( new Response(true, 400, "La orden que quiere modificar no existe", ""));
         } else if (order_status_codeE[0].order_status_code === 2 || order_status_codeE[0].order_status_code === 6) {
-            
             res.status(400).send( new Response(true, 400, "No se puede actualizar el estado de la orden", `La orden tiene anteriormente un estado ${order_status_codeE[0].order_status_code} =  ${order_status_codeE[0].order_status_description}`));
         }
         else{
@@ -221,10 +149,8 @@ const orderIn = async (req,res,next) => {
     };
 };
 
-/*Validacion cancelar orden: que el status del estado sea previamente válido para cancelar*/
-
+/*Valida que el status del estado sea previamente válido para cancelar*/
 const orderStatusValidate = async (req,res,next) => {
-    
     try {
         const {order_id} = req.body;
         const userOrder = await getOrderFullData (order_id)
@@ -241,54 +167,45 @@ const orderStatusValidate = async (req,res,next) => {
     }
 };
 
-/**Validacion cancelar orden:  que la orden exista y que los datos no sean nulos -  que la orden corresponda con el usuario que quiere eliminar */
-
+/**Valida que la orden exista y que los datos no sean nulos -  que la orden corresponda con el usuario que quiere eliminar */
 const orderDataValidate = async (req, res, next) => {
-    
     const {order_id,user_id} = req.body;
-    
     try {
-        
         if (!user_id) {
             res.status(400).send(new Response(true, 400, "No se admiten campos vacíos", ""))
         } else if (typeof (user_id) != 'number') {
             res.status(400).send(new Response(true, 400, "Todos los campos deben ser numéricos", ""))
         } else {
             const getOrder = await getOrderById(order_id,user_id);
-            const admin = await selectUserAdmin(user_id)
+            const admin = await selectUserAdmin(user_id);
             if (getOrder.length === 0 && admin[0].user_admin !== 1){
                 res.status(403).send(new Response(true, 403, `La orden no pertenece al usuario o el mismo no tiene privilegios de administrador` , {"order_id": order_id, "user_id":  user_id}))
             } else {
                 next();
-            }
+            };
         };
     } catch (error) {
         res.status(500).send(new Response(true, 500, "No fue posible efectuar la operación", error))
-    }
-}
+    };
+};
 
+/*Valida que el usuario pueda consultar sus ordenes y que tenga pendientes*/
 const orderDataValidateByParams = async (req, res, next) => {
-    
     const {user_id} = req.params;
-
     try {
-        
-            const getOrder = await getOrderByUser(user_id);
-            const admin = await getUserAdminByEmail(req.user['email']);
-            const emailById = await selectEmailById(user_id);
-
-            if (getOrder.length == 0) {
-                res.status(403).send(new Response(true, 403, `El usuario no tiene órdenes pendientes` , ""))
-            } else if (admin[0].user_admin !== 1 && req.user['email'] !== emailById[0].email) {
-                res.status(401).send(new Response(true, 401, `El usuario logueado no tiene permisos para consultar esas órdenes` , ""))
-            }  
-            else {
-                next();
-            };
-        
+        const getOrder = await getOrderByUser(user_id);
+        const admin = await getUserAdminByEmail(req.user['email']);
+        const emailById = await selectEmailById(user_id);
+        if (getOrder.length == 0) {
+            res.status(403).send(new Response(true, 403, `El usuario no tiene órdenes pendientes`, ""));
+        } else if (admin[0].user_admin !== 1 && req.user['email'] !== emailById[0].email) {
+            res.status(401).send(new Response(true, 401, `El usuario logueado no tiene permisos para consultar esas órdenes`, ""));
+        } else {
+            next();
+        };
     } catch (error) {
         res.status(500).send(new Response(true, 500, "No fue posible efectuar la operación", error));
-    }
+    };
 };
 
 module.exports = {
@@ -303,8 +220,3 @@ module.exports = {
     orderDataValidate,
     orderDataValidateByParams
 };
-
-
-
-
-

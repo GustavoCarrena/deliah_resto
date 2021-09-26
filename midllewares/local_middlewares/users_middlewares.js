@@ -1,8 +1,7 @@
 const Response = require('../../classes/response');
 const {selectUserEmail} = require('../../model/users');
 
-/* ==== Control de campos vacíos, inexistencia de campos obligatorios, usuario administrador ==== */
-
+/* Control de campos vacíos, inexistencia de campos obligatorios, usuario administrador */
 const userDataValidate = (req, res, next) => {
     const {email,fullname,phone,adress,user_password,user_admin} = req.body;
     if (email != null && fullname != null && phone != null && adress != null && user_password != null && user_admin != null) {
@@ -20,15 +19,11 @@ const userDataValidate = (req, res, next) => {
     };
 };
 
-/* ======= Control de duplicidad de usuarios en el registro =================== */
-
+/* Control de duplicidad de usuarios en el registro */
 const userEmailValidate = (req, res, next) => {
-    
     const {email} = req.body;
-
    selectUserEmail(email)
     .then(userEmail => {
-
         if (userEmail.length == 0 ) {
             next();
         } else {
@@ -40,10 +35,7 @@ const userEmailValidate = (req, res, next) => {
     });
 };
 
-
-
 /* ==== Control de campos vacíos Login ==== */
-
 const userDataLoginValidate = (req, res, next) => {
     const {email,user_password} = req.body;
     if (email != null && user_password != null) {
@@ -54,8 +46,6 @@ const userDataLoginValidate = (req, res, next) => {
         res.status(400).send(new Response(true, 400, "Se requieren todos los campos", ""));
     };
 };
-
-/* ======== Exportación de funcionalidades a modules/index_users ============= */
 
 module.exports = {
     userDataValidate,

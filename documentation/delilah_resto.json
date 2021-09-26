@@ -1,0 +1,1287 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "description": "Tercer proyecto Acámica",
+    "version": "1.0.0",
+    "title": "Delilah Resto"
+  },
+  "externalDocs": {
+    "description": "Código en GitHub",
+    "url": "https://github.com/GustavoCarrena/delilah_resto"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000"
+    }
+  ],
+  "tags": [
+    {
+      "name": "user",
+      "description": "Registro y logueo de usuario"
+    },
+    {
+      "name": "products",
+      "description": "CRUD de productos"
+    },
+    {
+      "name": "orders",
+      "description": "CRUD de ordenes"
+    }
+  ],
+  "paths": {
+    "/user/userLogin": {
+      "post": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Logueo de usuario",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "body",
+            "description": "ingreso de usuario mediante identificación de usuario y contraseña",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "type": "string",
+                  "description": "email con el cual se registró"
+                },
+                "user_password": {
+                  "type": "string",
+                  "description": "password con el cual se registró"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "status": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "mensaje respuesta"
+                    },
+                    "response": {
+                      "type": "object",
+                      "properties": {
+                        "ID Usuario": {
+                          "type": "integer",
+                          "description": "id generado incrementalmente",
+                          "example": 10
+                        }
+                      }
+                    },
+                    "Token": {
+                      "type": "string",
+                      "description": "Devuelve token con cada logueo con vencimiento de 1 hora ",
+                      "example": "string con codificación MD5"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Valores o campos nulos o incorrectos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Errors"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Email o Password incorrectos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Errors"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error Interno del Servidor",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Errors"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user/userCreate": {
+      "post": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Alta de Usuario",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "body",
+            "description": "Alta de un usuario con ingreso de datos requeridos",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "type": "string"
+                },
+                "fullname": {
+                  "type": "string"
+                },
+                "phone": {
+                  "type": "string"
+                },
+                "adress": {
+                  "type": "string"
+                },
+                "user_password": {
+                  "type": "string"
+                },
+                "user_admin": {
+                  "type": "integer",
+                  "description": "Usuario adminstrador = 1 / Usuario sin privilegios de administrador = 0",
+                  "example": 0
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Usuario creado exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "status": {
+                      "type": "integer",
+                      "example": 201
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "mensaje respuesta"
+                    },
+                    "response": {
+                      "type": "string",
+                      "description": "id del usuario xx creado exitosamente"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Los únicos valores admitidos para user_admin son 0 ó 1, Todos los campos deben contenter datos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Errors"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error Interno del Servidor",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Errors"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/products/productCreate": {
+      "post": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "tags": [
+          "products"
+        ],
+        "summary": "Alta de Productos",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "body",
+            "description": "usuario perfil administrador puede dar de alta un plato ",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "type": "string",
+                  "description": "email con el cual se registró"
+                },
+                "product_name": {
+                  "type": "string",
+                  "description": "identificación del plato a crear"
+                },
+                "product_description": {
+                  "type": "string",
+                  "description": "descripción comercial o ampliada del plato"
+                },
+                "product_price": {
+                  "type": "integer",
+                  "description": "precio del plato",
+                  "example": 1000
+                },
+                "product_disponibilty": {
+                  "type": "integer",
+                  "description": "Código 0 = Producto no disponible para incorporar en una orden / Código 1 = Producto disponible para incorporar en una orden",
+                  "example": 1
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "status": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "mensaje respuesta"
+                    },
+                    "response": {
+                      "type": "string",
+                      "description": "mensaje respuesta"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Todos los campos deben contenter datos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Errors"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No se encontró token de autorización",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Errors"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error Interno del Servidor",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Errors"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/products/getAllProducts": {
+      "get": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "tags": [
+          "products"
+        ],
+        "summary": "Consulta de Productos",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "",
+            "description": "Cualquier usuario registrado y logueado puede solicitar la cantidad total de productos disponibles",
+            "required": false,
+            "schema": {
+              "description": "No se envían datos desde el body"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Devuelve todos platos disponibles",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "status": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "Consulta generada exitosamente"
+                    },
+                    "response": {
+                      "type": "array",
+                      "items": {
+                        "properties": {
+                          "product_id": {
+                            "type": "integer",
+                            "description": "Id generado autoincrementalmente"
+                          },
+                          "product_name": {
+                            "type": "string",
+                            "description": "nombre del producto"
+                          },
+                          "product_description": {
+                            "type": "string",
+                            "description": "descripción del producto"
+                          },
+                          "product_price": {
+                            "type": "integer",
+                            "description": "precio del producto"
+                          },
+                          "product_disponibilty": {
+                            "type": "integer",
+                            "description": "solamente arroja resultados de la búsqueda los productos disponibles"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No existen productos o no existen productos disponibles / No se encontró toquen de autorización",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Errors"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error Interno del Servidor",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Errors"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/products/deleteProduct": {
+      "delete": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "tags": [
+          "products"
+        ],
+        "summary": "Eliminación de Productos",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "body",
+            "description": "Usuario registrado, logueado y con privilegios de administrador (user_admin = 1) puede eliminar un producto",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "user_id": {
+                  "type": "integer",
+                  "description": "id del usuario"
+                },
+                "product_id": {
+                  "type": "integer",
+                  "description": "id del producto a eliminar"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Eliminación de plato exitosa",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "status": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "Plato eliminado exitosamente"
+                    },
+                    "response": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "EL usaurio debe ser administrador / No se encontró toquen de autorización / el Id del producto no existe",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Errors"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error Interno del Servidor",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Errors"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/products/updateProduct": {
+      "put": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "tags": [
+          "products"
+        ],
+        "summary": "Actualización de Productos",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "body",
+            "description": "Usuario registrado, logueado y con privilegios de administrador (user_admin = 1) puede actualizar valores de un producto",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "user_id": {
+                  "type": "integer",
+                  "description": "id del usuario"
+                },
+                "product_id": {
+                  "type": "integer",
+                  "description": "id del producto a eliminar"
+                },
+                "data": {
+                  "type": "object",
+                  "description": "datos para actualizar los datos del producto",
+                  "properties": {
+                    "product_name": {
+                      "type": "string"
+                    },
+                    "product_description": {
+                      "type": "string"
+                    },
+                    "product_price": {
+                      "type": "integer"
+                    },
+                    "product_disponibilty": {
+                      "type": "integer",
+                      "description": "Únicos valores admitidos: 1 = producto disponible / 0 = producto no disponible",
+                      "example": 1
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Actualización de plato exitosa",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "status": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "Plato actualizado exitosamente"
+                    },
+                    "response": {
+                      "type": "object",
+                      "description": "datos para actualizar los datos del producto",
+                      "properties": {
+                        "product_name": {
+                          "type": "string"
+                        },
+                        "product_description": {
+                          "type": "string"
+                        },
+                        "product_price": {
+                          "type": "integer"
+                        },
+                        "product_disponibilty": {
+                          "type": "integer"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "EL usaurio debe ser administrador / No se encontró toquen de autorización / el Id del producto no existe",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Errors"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error Interno del Servidor",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Errors"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/orders/orderCreate": {
+      "post": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "tags": [
+          "orders"
+        ],
+        "summary": "Creación de órdenes",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "body",
+            "description": "Usuario registrado y logueado, crea una orden",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "order_header": {
+                  "type": "object",
+                  "description": "datos del usuario",
+                  "properties": {
+                    "user_id": {
+                      "type": "integer"
+                    },
+                    "order_adress": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "orderProducts": {
+                  "type": "array",
+                  "description": " 1 objeto por cada producto seleccionado",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "product_id": {
+                        "type": "integer"
+                      },
+                      "product_quantity": {
+                        "type": "integer",
+                        "example": 5
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "status": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "Orden creada exitosamente"
+                    },
+                    "response": {
+                      "type": "object",
+                      "description": "array de objeto",
+                      "properties": {
+                        "dataArrayProducts": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "order_id": {
+                                "type": "integer"
+                              },
+                              "product_id": {
+                                "type": "integer"
+                              },
+                              "product_name": {
+                                "type": "string"
+                              },
+                              "product_price": {
+                                "type": "integer"
+                              },
+                              "precio total por producto": {
+                                "type": "integer"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "El usuario no se encuentra registrado ó hay poductos inexistentes o no disponibles",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "status": {
+                      "type": "integer",
+                      "example": 404
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "response": {
+                      "type": "array",
+                      "description": "Id de productos que son inexistentes o no disponibles",
+                      "items": {
+                        "type": "integer",
+                        "description": "cuando el producto no exista o no se encuentre disponible, devuelve el id del producto. Cuando el usuario no se encunetre registrado, no devuelve ningun valor"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error Interno del Servidor",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Errors"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/orders/orderConfirm": {
+      "put": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "tags": [
+          "orders"
+        ],
+        "summary": "Confirmación de la orden",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "body",
+            "description": "Usuario registrado y logueado, confirma su orden y establece el metodo de pago",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "order_id": {
+                  "type": "integer",
+                  "description": "la orden debe corresponderse con el usuario que la creó"
+                },
+                "user_id": {
+                  "type": "integer"
+                },
+                "payment_code": {
+                  "type": "integer"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "status": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "Orden confirmada"
+                    },
+                    "response": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "No se admiten campos vacíos y los mismos deben ser numéricos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Errors"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "La orden no existe o el usuario con el que se intenta confirmar no se corresponde con la orden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Errors"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "El tipo de pago debe ser Efectivo ó Tarjeta",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "status": {
+                      "type": "integer",
+                      "example": 404
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "response": {
+                      "type": "string",
+                      "description": "devuelve el payment_code no admitido"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error Interno del Servidor",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Errors"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/orders/orderStatus": {
+      "put": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "tags": [
+          "orders"
+        ],
+        "summary": "Modificación del status de la orden",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "user_id": {
+                  "type": "integer",
+                  "description": "Solamente usuario con privilegios de administrador puede realizar este cambio de estado de la orden"
+                },
+                "order_status_code": {
+                  "type": "integer",
+                  "description": "1 = Pendiente, 2 = Cancelado, 3 = Confirmado, 4 = En Preparación, 5 = En Camino, 6 = Entregado"
+                },
+                "order_id": {
+                  "type": "integer"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "status": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "Orden actualizada"
+                    },
+                    "response": {
+                      "type": "object",
+                      "properties": {
+                        "order_status_code": {
+                          "type": "integer"
+                        },
+                        "order_status_description": {
+                          "type": "integer"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "No se admiten campos vacíos y los mismos deben ser numéricos. Alguno de los códigos de estado o de orden no existen",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Errors"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "El usuario debe ser administrador para efectuar la operación y el campo no puede estar vacío",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Errors"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error Interno del Servidor",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Errors"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/orders/orderCancelStatus": {
+      "put": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "tags": [
+          "orders"
+        ],
+        "summary": "Cancelación de la orden",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "user_id": {
+                  "type": "integer",
+                  "description": "Solamente usuario con privilegios de administrador o el usuario que generó la orden puede realizar este cambio de estado (código 2)"
+                },
+                "order_id": {
+                  "type": "integer"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "status": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "Orden actualizada"
+                    },
+                    "response": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "No se admiten campos vacíos y los mismos deben ser numéricos. Alguno de los códigos de estado o de orden no existen. La orden ya se encuentra cancelada (order_status_code 2). La orden ya se encuentra entregada al cliente (order_status_code 6)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Errors"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "La orden no pertenece al usuario o el mismo no tiene privilegios de administrador",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "status": {
+                      "type": "integer",
+                      "example": 403
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "response": {
+                      "type": "object",
+                      "properties": {
+                        "user_id": {
+                          "type": "integer",
+                          "description": "Solamente usuario con privilegios de administrador o el usuario que generó la orden puede realizar este cambio de estado"
+                        },
+                        "order_id": {
+                          "type": "integer"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error Interno del Servidor",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Errors"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/orders/selectOrder/{user_id}": {
+      "get": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "tags": [
+          "orders"
+        ],
+        "summary": "Consulta de ordenes por Id de Usuario",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "user_id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "description": "Solamente usuario con privilegios de administrador o el usuario que generó la orden puede realizar la consulta"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Consulta exitosa: devuelve órdenes que no se encuentran canceladas (código 2) o finalizadas (código 6)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "status": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "response": {
+                      "type": "array",
+                      "description": " 1 objeto por cada orden del usuario",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "order_id": {
+                            "type": "integer"
+                          },
+                          "address": {
+                            "type": "string"
+                          },
+                          "orderStatus": {
+                            "type": "integer"
+                          },
+                          "paymentDescription": {
+                            "type": "string",
+                            "description": "descripción del campo orderStatus"
+                          },
+                          "arrayProducts": {
+                            "type": "array",
+                            "description": "productos por cada orden",
+                            "items": {
+                              "type": "object",
+                              "description": "cada objeto contiene los items de 1 producto",
+                              "properties": {
+                                "product_id": {
+                                  "type": "integer"
+                                },
+                                "product_name": {
+                                  "type": "string"
+                                },
+                                "product_quantity": {
+                                  "type": "integer",
+                                  "description": "cantidad solicitada de 1 producto"
+                                },
+                                "product_price": {
+                                  "type": "integer",
+                                  "description": "precio unitario del producto"
+                                },
+                                "precio total por producto": {
+                                  "type": "integer",
+                                  "description": "precio unitario multiplicado por cantidad"
+                                }
+                              }
+                            }
+                          },
+                          "totalOrder": {
+                            "type": "integer",
+                            "description": "precio total por cada orden"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Solo usuario con privilegio de administrador o el mimso que generó la orden, puede consultarlas",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Errors"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error si el usuario no tiene ordenes pendientes (códigos distintos a cancelado o entregado)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Errors"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error Interno del Servidor",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Errors"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Errors": {
+        "properties": {
+          "error": {
+            "type": "boolean",
+            "example": true,
+            "description": "True: indica que hubo un error"
+          },
+          "status": {
+            "type": "integer",
+            "example": "400-500",
+            "description": "Códigos de respuesta http de las familias 400 ó 500"
+          },
+          "mensaje": {
+            "type": "string",
+            "description": "Mensaje que especifica el tipo de error"
+          },
+          "respuesta": {
+            "type": "object",
+            "description": "En este campo ira información detallada del error cuando esté definido en el backend"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}

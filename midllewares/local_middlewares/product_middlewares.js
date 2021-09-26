@@ -2,7 +2,7 @@ const Response = require('../../classes/response');
 const {selectProductById} = require('../../model/products');
 const {selectUserAdmin} = require('../../model/users');
 
-
+/*Validacición de privilegios de administrador*/
 const userAdminValidate = async (req,res,next) => {
     try {
         const {user_id} = req.body;
@@ -17,6 +17,7 @@ const userAdminValidate = async (req,res,next) => {
     };
 };
 
+/*Valida la recepción de los campos requeridos y que los mismos no estén vacios*/
 const productDataValidate = async (req,res,next) => {
     const {email,product_name,product_description,product_price,product_disponibilty} = req.body;
     if (email != null && product_name != null && product_description != null && product_price != null && product_disponibilty != null ) {
@@ -28,18 +29,20 @@ const productDataValidate = async (req,res,next) => {
     } else {
         res.status(400).send(new Response(true, 400, "Se requieren todos los campos", ""));
     };
-}
+};
 
-
-async function getProductId(req, res,next) {
+/*Valida que el producto, a través del Id, exista en la tabla productos*/
+async function getProductId(req, res, next) {
     try {
         let {product_id} = req.body;
         let selById = await selectProductById(product_id);
         let selId = selById[0].product_id;
-        if (selId == product_id && selId) {next()};
+        if (selId == product_id && selId) {
+            next()
+        };
     } catch (error) {
         let {product_id} = req.body;
-        res.status(401).send(new Response(true, 401, "No fue posible actualizar el producto" , `El Id '${product_id}' ingresado no existe o no se ingresó el dato requerido, por favor seleccione un id válido para realizar la eliminación del producto`));
+        res.status(401).send(new Response(true, 401, "No fue posible actualizar el producto", `El Id '${product_id}' ingresado no existe o no se ingresó el dato requerido, por favor seleccione un id válido para realizar la eliminación del producto`));
     };
 };
 

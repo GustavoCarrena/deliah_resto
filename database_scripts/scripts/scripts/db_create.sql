@@ -1,8 +1,3 @@
--- phone VARCHAR(50) NOT NULL, --validar que no entren letras
--- user_password VARCHAR(50) NOT NULL, --validar password seguro + cantidad minima de caracteres
-  -- user_admin TINYINT(1) NOT NULL, -- 0 => user_admin = FALSE / 1 => user_admin = TRUE
--- product_disponibilty TINYINT(1) NOT NULL, -- 0 => product_disponibilty = FALSE / 1 => product_disponibilty = TRUE,
-
 CREATE DATABASE delilah_db;
 
 USE delilah_db;
@@ -61,8 +56,3 @@ CREATE TABLE order_products (
   FOREIGN KEY (product_id) REFERENCES products (product_id),
   PRIMARY KEY (order_id, product_id)
 )ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
-
-
-
-

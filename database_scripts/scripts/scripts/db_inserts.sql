@@ -8,7 +8,6 @@ INSERT INTO payment_methods (payment_description) VALUES
 ('Efectivo'),
 ('Tarjeta');
 
-
 INSERT INTO order_status (order_status_description) VALUES
 ('Pendiente'),
 ('Cancelado'),
@@ -16,8 +15,3 @@ INSERT INTO order_status (order_status_description) VALUES
 ('En Preparación'),
 ('En Camino'),
 ('Entregado');
-
-
-
-
-
