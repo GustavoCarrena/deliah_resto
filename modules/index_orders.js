@@ -10,6 +10,6 @@ router.post('/orderCreate', validateOrderProductData, validateOrderData, userIdV
 router.put('/orderConfirm', confirmOrderDataValidate, orderUpdate);
 router.put('/orderStatus', userAdmin, orderStatusData, orderIn, orderStatusUpdate);
 router.put('/orderCancelStatus', orderDataValidate, orderStatusValidate, orderStatusCancel);
-router.get('/selectOrder/:user_id', orderDataValidateByParams, getOrderByUserId);
+router.get('/selectOrder', orderDataValidateByParams, getOrderByUserId);
 
 module.exports = router;

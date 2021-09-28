@@ -4,7 +4,8 @@ const Response = require('../../../classes/response.js');
 /*Detalle de productos y precios de las órdenes no canceladas o entragadas, por cliente */
 async function getOrderByUserId(req, res) {
     let arrayOrders = [];
-    const {user_id} = req.params;
+    const {user_id} = req.query;
+
     try {
         const SelectOrderByUser = await getOrderByUser(user_id)//selecciona datos de las ordenes de un usuario, que no se encuentran canceladas ni entregadas al cliente
         for (let i = 0; i < SelectOrderByUser.length; i++) {

@@ -191,16 +191,16 @@ const orderDataValidate = async (req, res, next) => {
 
 /*Valida que el usuario pueda consultar sus ordenes y que tenga pendientes*/
 const orderDataValidateByParams = async (req, res, next) => {
-    const {user_id} = req.params;
+    const {user_id} = req.query;
     try {
         const getOrder = await getOrderByUser(user_id);
         const admin = await getUserAdminByEmail(req.user['email']);
         const emailById = await selectEmailById(user_id);
         if (getOrder.length == 0) {
-            res.status(403).send(new Response(true, 403, `El usuario no tiene órdenes pendientes`, ""));
-        } else if (admin[0].user_admin !== 1 && req.user['email'] !== emailById[0].email) {
-            res.status(401).send(new Response(true, 401, `El usuario logueado no tiene permisos para consultar esas órdenes`, ""));
+            res.status(403).send(new Response(true, 403, `El usuario ${user_id} no tiene órdenes pendientes`, ""));
         } else {
+            console.log(`req.user['email'] = ${req.user['email']}` );
+            console.log(`emailById[0].email = ${emailById[0].email}`);
             next();
         };
     } catch (error) {

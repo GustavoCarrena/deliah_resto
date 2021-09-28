@@ -1134,8 +1134,7 @@
             "name": "user_id",
             "required": true,
             "schema": {
-              "type": "integer",
-              "description": "Solamente usuario con privilegios de administrador o el usuario que generó la orden puede realizar la consulta"
+              "type": "integer"
             }
           }
         ],
@@ -1213,16 +1212,6 @@
                       }
                     }
                   }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Solo usuario con privilegio de administrador o el mimso que generó la orden, puede consultarlas",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Errors"
                 }
               }
             }
