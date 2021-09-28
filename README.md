@@ -24,6 +24,7 @@ Los paquetes Node Package Manager (NPM) necesarios para el presente proyecto, se
 
 ### 3.1. Gráfica
 
+![modelo](modelo.png)
 
 ### 3.2. Descripción
 |Carpeta    |Usabilidad |
