@@ -16,7 +16,7 @@ Los paquetes Node Package Manager (NPM) necesarios para el presente proyecto, se
 
 * [**Postman**](https://www.postman.com/)
 
-    El archivo con los endpoints del proyecto para importar en Postman se encuentra en [postman/delilah.postman_collection.json](https://github.com/GustavoCarrena/delilah_resto/blob/main/postman/delilah.postman_collection.json) , y los parámetros requeridos para cada operación, se encuentran definidos en la documentación realizada con Swagger.
+    El archivo con los request para probar los endpoints del proyecto para importar en Postman se encuentra en [postman/delilah.postman_collection.json](https://github.com/GustavoCarrena/delilah_resto/blob/main/postman/delilah.postman_collection.json) , y los parámetros requeridos para cada operación, se encuentran definidos en la documentación realizada con Swagger.
 
 * [**Acceso URL a la documentación del proyecto en Swagger**](http://localhost:3000/delilah_documentation/)  
 
@@ -105,7 +105,7 @@ CREATE TABLE order_products (
   PRIMARY KEY (order_id, product_id)
 )ENGINE=InnoDB DEFAULT CHARSET=latin1;
 ```
-### **4.3. Script SQL de creación de inserción de registros**
+### **4.3. Script SQL de inserción de registros**
 El [código](https://github.com/GustavoCarrena/delilah_resto/blob/main/database_scripts/scripts/scripts/db_inserts.sql) se encuentra en el repositorio con el fin de poder utilizar las funcionalidades del sistema
 
 ```sql
@@ -127,4 +127,3 @@ INSERT INTO order_status (order_status_description) VALUES
 ('En Camino'),
 ('Entregado');
  ```
-

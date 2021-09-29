@@ -1,7 +1,7 @@
 {
   "openapi": "3.0.0",
   "info": {
-    "description": "Tercer proyecto Acámica - Gustavo Carrena",
+    "description": "Tercer proyecto Acámica",
     "version": "1.0.0",
     "title": "Delilah Resto"
   },
@@ -11,7 +11,8 @@
   },
   "servers": [
     {
-      "url": "http://localhost:3000"
+      "url": "http://localhost:3000/v1",
+      "description": "host,basePath v1"
     }
   ],
   "tags": [
@@ -342,7 +343,7 @@
         "parameters": [
           {
             "in": "query",
-            "name": "",
+            "name": "body",
             "description": "Cualquier usuario registrado y logueado puede solicitar la cantidad total de productos disponibles",
             "required": false,
             "schema": {
@@ -732,6 +733,16 @@
               }
             }
           },
+          "401": {
+            "description": "No se encontró un token de autorización",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Errors"
+                }
+              }
+            }
+          },
           "404": {
             "description": "El usuario no se encuentra registrado ó hay poductos inexistentes o no disponibles",
             "content": {
@@ -840,6 +851,16 @@
           },
           "400": {
             "description": "No se admiten campos vacíos y los mismos deben ser numéricos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Errors"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No se encontró un token de autorización",
             "content": {
               "application/json": {
                 "schema": {
@@ -978,6 +999,16 @@
               }
             }
           },
+          "401": {
+            "description": "No se encontró un token de autorización",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Errors"
+                }
+              }
+            }
+          },
           "403": {
             "description": "El usuario debe ser administrador para efectuar la operación y el campo no puede estar vacío",
             "content": {
@@ -1069,6 +1100,16 @@
               }
             }
           },
+          "401": {
+            "description": "No se encontró un token de autorización",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Errors"
+                }
+              }
+            }
+          },
           "403": {
             "description": "La orden no pertenece al usuario o el mismo no tiene privilegios de administrador",
             "content": {
@@ -1134,7 +1175,8 @@
             "name": "user_id",
             "required": true,
             "schema": {
-              "type": "integer"
+              "type": "integer",
+              "description": "Solamente usuario con privilegios de administrador o el usuario que generó la orden puede realizar la consulta"
             }
           }
         ],
@@ -1212,6 +1254,16 @@
                       }
                     }
                   }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No se encontró un token de autorización",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Errors"
                 }
               }
             }
