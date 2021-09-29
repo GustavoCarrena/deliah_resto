@@ -16,9 +16,9 @@ Los paquetes Node Package Manager (NPM) necesarios para el presente proyecto, se
 
 * [**Postman**](https://www.postman.com/)
 
-    El archivo con los request para probar los endpoints del proyecto para importar en Postman se encuentra en [postman/delilah.postman_collection.json](https://github.com/GustavoCarrena/delilah_resto/blob/main/postman/delilah.postman_collection.json) , y los parámetros requeridos para cada operación, se encuentran definidos en la documentación realizada con Swagger.
+    El archivo con los request para probar los endpoints del proyecto para importar en Postman se encuentra en [postman/delilah.postman_collection.json](https://github.com/GustavoCarrena/delilah_resto/blob/main/postman/delilah.postman_collection.json), y los parámetros requeridos para cada operación, se encuentran definidos en la documentación realizada con Swagger.
 
-* [**Acceso URL a la documentación del proyecto en Swagger**](http://localhost:3000/delilah_documentation/)  
+* [**Acceso URL a la documentación del proyecto en Swagger**](http://localhost:3000/delilah_documentation/) ó [**Documento extensión yaml**](https://github.com/GustavoCarrena/delilah_resto/blob/main/documentation/delilah_resto.yaml)
 
 ## **3. Arquitectura de software**  
 
