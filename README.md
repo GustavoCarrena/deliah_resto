@@ -18,7 +18,14 @@ Los paquetes Node Package Manager (NPM) necesarios para el presente proyecto, se
 
     El archivo con los request para probar los endpoints del proyecto para importar en Postman se encuentra en [postman/delilah.postman_collection.json](https://github.com/GustavoCarrena/delilah_resto/blob/main/postman/delilah.postman_collection.json), y los parámetros requeridos para cada operación, se encuentran definidos en la documentación realizada con Swagger.
 
-* [**Acceso URL a la documentación del proyecto en Swagger**](http://localhost:3000/delilah_documentation/) ó [**Documento extensión yaml**](https://github.com/GustavoCarrena/delilah_resto/blob/main/documentation/delilah_resto.yaml)
+* [**Acceso la documentación del proyecto en Swagger**](https://github.com/GustavoCarrena/delilah_resto/blob/main/documentation/delilah_resto.yaml)
+
+* [**Acceso al archivo db_create.sql con los scripts para creación de la Base de Dato y de tablas**](https://github.com/GustavoCarrena/delilah_resto/tree/main/database_scripts/scripts/scripts)
+
+* [**Acceso al archivo db_inserts.sql con los scripts para inserción de datos básicos en las tablas**](https://github.com/GustavoCarrena/delilah_resto/blob/main/database_scripts/scripts/scripts/db_inserts.sql)
+
+
+* [**Acceso al archivo con la información de los puertos, la base, el host y user se encuentran en el siguiente archivo con las variable de entorno**](https://github.com/GustavoCarrena/delilah_resto/blob/main/.env)
 
 ## **3. Arquitectura de software**  
 
