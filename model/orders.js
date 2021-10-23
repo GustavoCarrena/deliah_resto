@@ -125,6 +125,20 @@ const getUserAdminByEmail = (email) => {
     })
 }
 
+const deleteOrderProduct = (id) => {
+    return sequelize.query('DELETE FROM order_products WHERE order_id = ?', {
+        type: sequelize.QueryTypes.DELETE,
+        replacements: [id]
+    });
+};
+
+const deleteOrders = (id) => {
+    return sequelize.query('DELETE FROM orders WHERE order_id = ?',{
+        type: sequelize.QueryTypes.DELETE,
+        replacements: [id]
+    });
+};
+
 module.exports = {
     insertNewOrder,
     insertInOrderTable,
@@ -140,5 +154,7 @@ module.exports = {
     getOrderByUser,
     getOrderDescription,
     getOrderByUserId,
-    getUserAdminByEmail
+    getUserAdminByEmail,
+    deleteOrderProduct,
+    deleteOrders
 };

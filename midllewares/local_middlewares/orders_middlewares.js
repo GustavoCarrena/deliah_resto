@@ -208,6 +208,27 @@ const orderDataValidateByParams = async (req, res, next) => {
     };
 };
 
+
+/**Valida que los campos de order_id y user_id no vengan vacíos y que sean numéricos
+ * Valida que exista la orden y que el usuario tenga permisos de administrador
+ *  **/
+const orderDeleteValidate = async (req, res, next) => {
+    const {order_id,user_id} = req.body;
+        if (!order_id || !user_id) {
+            res.status(400).send(new Response(true, 400, "No se admiten campos vacíos", ""))
+        } else if (typeof (order_id) != 'number' || typeof (user_id) != 'number') {
+            res.status(400).send(new Response(true, 400, "Todos los campos deben ser numéricos", ""))
+        } else {
+                const getOrder = await getOrderById(order_id,user_id);
+                console.log("getOrder.lenght" + "=" + getOrder.length);
+                if (getOrder.length < 1) {
+                    res.status(400).send(new Response(true, 400, `La orden no existe o El usuario no tiene privilegios de administrador` , {"order_id": order_id, "user_id":  user_id}))
+                } else {
+                    next();
+            } 
+        };
+};
+
 module.exports = {
     validateOrderProductData,
     validateOrderData,
@@ -218,5 +239,6 @@ module.exports = {
     orderIn,
     orderStatusValidate,
     orderDataValidate,
-    orderDataValidateByParams
+    orderDataValidateByParams,
+    orderDeleteValidate
 };

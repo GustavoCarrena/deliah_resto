@@ -1290,6 +1290,96 @@
           }
         }
       }
+    },
+    "/orders/deleteOrder": {
+      "delete": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "tags": [
+          "orders"
+        ],
+        "summary": "Eliminación de la orden",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "order_id": {
+                  "type": "integer"
+                },
+                "user_id": {
+                  "type": "integer"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "status": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "Orden ${order_id} eliminada correctamemte"
+                    },
+                    "response": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Respuestas posibles: No se admiten campos vacíos,Todos los campos deben ser numéricos,La orden no existe en la base de datos o El usuario no tiene privilegios de administrador",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Errors"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No se encontró un token de autorización",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Errors"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error Interno del Servidor",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Errors"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
